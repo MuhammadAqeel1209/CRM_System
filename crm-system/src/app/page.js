@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from '../app/Components/Navbar';
 import Sidebar from '../app/Components/Sidebar';
 import DashboardCard from '../app/Components/DashboardCard';
+import Link from 'next/link';
 import { FaUsers, FaFileContract, FaTasks, FaChartLine, FaCalendar, FaPhone, FaClipboardList, FaTrophy, FaBriefcase, FaBookOpen, FaDatabase } from 'react-icons/fa';
 
 export default function Dashboard() {
@@ -48,30 +49,8 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* Quick Access Section */}
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-2">Quick Access</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <DashboardCard
-                title="Calendar"
-                value=""
-                icon={<FaCalendar size={30} className="text-blue-500" />}
-              />
-              <DashboardCard
-                title="Contacts"
-                value=""
-                icon={<FaPhone size={30} className="text-green-500" />}
-              />
-              <DashboardCard
-                title="Contracts"
-                value=""
-                icon={<FaFileContract size={30} className="text-yellow-500" />}
-              />
-            </div>
-          </div>
-
           {/* Ranking and Competition Section */}
-          <div className="mt-8">
+          {/* <div className="mt-8">
             <h2 className="text-xl font-semibold mb-2">Ranking & Competition</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <DashboardCard
@@ -93,10 +72,10 @@ export default function Dashboard() {
             <p className="mt-2 text-sm text-gray-500">
               Points awarded based on closures and linked to career levels. Compensation is tied to achieved career levels and points.
             </p>
-          </div>
+          </div> */}
 
           {/* Partner Overview Section */}
-          <div className="mt-8">
+          {/* <div className="mt-8">
             <h2 className="text-xl font-semibold mb-2">Partner Overview</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <DashboardCard
@@ -118,10 +97,10 @@ export default function Dashboard() {
             <p className="mt-2 text-sm text-gray-500">
               Click on a partner for more details.
             </p>
-          </div>
+          </div> */}
 
           {/* Task Management Section */}
-          <div className="mt-8">
+          {/* <div className="mt-8">
             <h2 className="text-xl font-semibold mb-2">Task Management</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <DashboardCard
@@ -143,10 +122,10 @@ export default function Dashboard() {
             <p className="mt-2 text-sm text-gray-500">
               Click on a task for more details and editing options.
             </p>
-          </div>
+          </div> */}
 
           {/* Client App Overview Section */}
-          <div className="mt-8">
+          {/* <div className="mt-8">
             <h2 className="text-xl font-semibold mb-2">Client App Overview</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <DashboardCard
@@ -168,11 +147,11 @@ export default function Dashboard() {
             <p className="mt-2 text-sm text-gray-500">
               Notifications and updates about contracts are available.
             </p>
-          </div>
+          </div> */}
 
           {/* Calendar Overview Section */}
           <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-2">Calendar Overview</h2>
+            <h2 className="text-xl font-semibold mb-2"> <Link href='/Calendar' > Calendar Overview</Link> </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <DashboardCard
                 title="Integrate with Gmail/Outlook"
@@ -196,7 +175,7 @@ export default function Dashboard() {
           </div>
 
           {/* E-Learning Section */}
-          <div className="mt-8">
+          {/* <div className="mt-8">
             <h2 className="text-xl font-semibold mb-2">E-Learning Section</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <DashboardCard
@@ -218,10 +197,10 @@ export default function Dashboard() {
             <p className="mt-2 text-sm text-gray-500">
               Monitor employee training progress and access materials.
             </p>
-          </div>
+          </div> */}
 
           {/* Data Collection Section */}
-          <div className="mt-8">
+          {/* <div className="mt-8">
             <h2 className="text-xl font-semibold mb-2">Data Collection</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <DashboardCard
@@ -243,7 +222,7 @@ export default function Dashboard() {
             <p className="mt-2 text-sm text-gray-500">
               Modify data collection using the consulting analysis tool.
             </p>
-          </div>
+          </div> */}
         </main>
       </div>
     </div>

@@ -10,22 +10,22 @@ const ClientApp = () => {
   const [selectedPolicy, setSelectedPolicy] = useState(null);
 
   // Fetch client policies and notifications on component mount
-  useEffect(() => {
-    const fetchPoliciesAndNotifications = async () => {
-      try {
-        const [policiesResponse, notificationsResponse] = await Promise.all([
-          axios.get('/api/client/policies'), // Adjust endpoint as needed
-          axios.get('/api/client/notifications'), // Adjust endpoint as needed
-        ]);
-        setClientPolicies(policiesResponse.data.policies);
-        setNotifications(notificationsResponse.data.notifications);
-      } catch (error) {
-        console.error('Error fetching policies or notifications:', error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchPoliciesAndNotifications = async () => {
+  //     try {
+  //       const [policiesResponse, notificationsResponse] = await Promise.all([
+  //         axios.get('/api/client/policies'), // Adjust endpoint as needed
+  //         axios.get('/api/client/notifications'), // Adjust endpoint as needed
+  //       ]);
+  //       setClientPolicies(policiesResponse.data.policies);
+  //       setNotifications(notificationsResponse.data.notifications);
+  //     } catch (error) {
+  //       console.error('Error fetching policies or notifications:', error);
+  //     }
+  //   };
 
-    fetchPoliciesAndNotifications();
-  }, []);
+  //   fetchPoliciesAndNotifications();
+  // }, []);
 
   const handlePolicyClick = (policy) => {
     setSelectedPolicy(policy); // Show detailed view of selected policy

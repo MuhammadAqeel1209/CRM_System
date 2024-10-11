@@ -5,8 +5,6 @@ const EventList = ({ events }) => {
     <div>
       <h2 className="text-2xl font-semibold mb-4">Scheduled Events</h2>
       <ul className="bg-white rounded-lg shadow-md p-4">
-        {console.log("0000")}
-        {console.log(events)}
         {events.length > 0 ? (
           events.map((event, index) => (
             <li key={index} className="border-b py-2">

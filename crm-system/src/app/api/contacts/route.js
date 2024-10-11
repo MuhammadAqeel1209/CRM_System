@@ -1,8 +1,8 @@
-import { connectDB } from "@/app/libs/mongodb";
+import  connectDatabase  from "@/app/libs/mongodb";
 import Contact from "@/app/Model/Contact"; 
 export const POST = async (request) => {
   try {
-    await connectDB(); // Connect to the database
+    await connectDatabase(); // Connect to the database
 
     const { name, phoneNumber, email, type, leadSource, rating } = await request.json();
 
@@ -21,7 +21,6 @@ export const POST = async (request) => {
       );
     }
 
-    // Optional: Additional validation (e.g., email format)
 
     const newContact = await Contact.create({
       name,
@@ -57,5 +56,31 @@ export const POST = async (request) => {
         status: 500,
       }
     );
+  }
+};
+
+
+export const GET = async (request) => {
+  try {
+    await connectDatabase ();
+    const data = await Contact.find();
+    return new Response(JSON.stringify({
+      success: true,
+      status: 200,
+      data
+    }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 200
+    });
+  } catch (error) {
+    console.error(error);
+    return new Response(JSON.stringify({
+      success: false,
+      status: 500,
+      error: "Internal Server Error"
+    }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 500
+    });
   }
 };

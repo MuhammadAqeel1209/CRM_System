@@ -1,9 +1,21 @@
-import React from 'react';
-import Navbar from '../app/Components/Navbar';
-import Sidebar from '../app/Components/Sidebar';
-import DashboardCard from '../app/Components/DashboardCard';
-import Link from 'next/link';
-import { FaUsers, FaFileContract, FaTasks, FaChartLine, FaCalendar, FaPhone, FaClipboardList, FaTrophy, FaBriefcase, FaBookOpen, FaDatabase } from 'react-icons/fa';
+import React from "react";
+import Navbar from "../app/Components/Navbar";
+import Sidebar from "../app/Components/Sidebar";
+import DashboardCard from "../app/Components/DashboardCard";
+import Link from "next/link";
+import {
+  FaUsers,
+  FaFileContract,
+  FaTasks,
+  FaChartLine,
+  FaCalendar,
+  FaPhone,
+  FaClipboardList,
+  FaTrophy,
+  FaBriefcase,
+  FaBookOpen,
+  FaDatabase,
+} from "react-icons/fa";
 
 export default function Dashboard() {
   return (
@@ -13,7 +25,7 @@ export default function Dashboard() {
         <Navbar />
         <main className="p-4">
           <h1 className="text-2xl font-semibold mb-4">Dashboard Overview</h1>
-          
+
           {/* Key Performance Indicators Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <DashboardCard
@@ -151,27 +163,17 @@ export default function Dashboard() {
 
           {/* Calendar Overview Section */}
           <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-2"> <Link href='/Calendar' > Calendar Overview</Link> </h2>
+            <h2 className="text-xl font-semibold mb-2"> Calendar Overview </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <DashboardCard
-                title="Integrate with Gmail/Outlook"
-                value=""
-                icon={<FaCalendar size={30} className="text-blue-500" />}
-              />
-              <DashboardCard
-                title="Meetings Scheduled"
-                value="3"
-                icon={<FaCalendar size={30} className="text-green-500" />}
-              />
-              <DashboardCard
-                title="Tasks Due"
-                value="2"
-                icon={<FaTasks size={30} className="text-yellow-500" />}
-              />
+              <Link href="/Calendar">
+                {" "}
+                <DashboardCard
+                  title="Meetings Scheduled"
+                  value=""
+                  icon={<FaCalendar size={30} className="text-green-500" />}
+                />
+              </Link>
             </div>
-            <p className="mt-2 text-sm text-gray-500">
-              Schedule meetings directly from the CRM.
-            </p>
           </div>
 
           {/* E-Learning Section */}

@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import Navbar from "../Components/Navbar";
 import Sidebar from "../Components/Sidebar";
@@ -28,8 +27,7 @@ const Contacts = () => {
     const fetchContacts = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("/api/contacts"); // Ensure endpoint is correct
-        console.log("API Response:", response.data); // Log response
+        const response = await axios.get("/api/contacts"); 
         if (response.data.success && Array.isArray(response.data.data)) {
           setContacts(response.data.data);
         } else {
@@ -58,7 +56,7 @@ const Contacts = () => {
     try {
       const response = await axios.post("/api/contacts", newContact);
       if (response.data.success && response.data.data) {
-        setContacts([...contacts, response.data.data]); // Update contact list
+        setContacts([...contacts, response.data.data]);
         setNewContact({
           name: "",
           phoneNumber: "",
@@ -68,7 +66,7 @@ const Contacts = () => {
           rating: "",
           level: "",
         });
-        setShowForm(false); // Hide form after submission
+        setShowForm(false); 
       } else {
         console.error("Unexpected API response on POST:", response.data);
         setError("Unexpected response from the server.");
@@ -102,7 +100,7 @@ const Contacts = () => {
     }
 
     setLoading(true);
-    setError(null); // Reset error state
+    setError(null); 
 
     axios
       .delete(`/api/contacts/${id}`)
@@ -128,7 +126,7 @@ const Contacts = () => {
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null); // Reset error state
+    setError(null); 
     axios
       .put(`/api/contacts/${editContact._id}`, editContact)
       .then((res) => {

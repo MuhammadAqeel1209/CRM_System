@@ -113,9 +113,7 @@ const Contracts = () => {
       const res = await axios.delete(`/api/contracts/${id}`);
       if (res.status === 200) {
         setContracts(contracts.filter((contract) => contract._id !== id));
-      } else {
-        setError("Failed to delete contract. Please try again.");
-      }
+      } 
     } catch {
       setError("Failed to delete contract. Please try again.");
     } finally {
@@ -138,14 +136,13 @@ const Contracts = () => {
         `/api/contracts/${editContract._id}`,
         editContract
       );
-      console.log(res);
       setContracts((prevContracts) =>
         prevContracts.map((contract) =>
           contract._id === editContract._id ? res.data.data : contract
         )
       );
       resetEditContract();
-      setShowEditModal(false); // Close the modal after successful update
+      setShowEditModal(false); 
     } catch (err) {
       console.error(
         "Failed to update contract:",

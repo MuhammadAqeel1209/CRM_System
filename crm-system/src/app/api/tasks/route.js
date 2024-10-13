@@ -1,29 +1,31 @@
 import connectDatabase from "@/app/libs/mongodb";
-import Patners from "@/app/Model/Patner"; 
+import Tasks from "@/app/Model/Task";
 
 export const POST = async (request) => {
   try {
-    await connectDatabase(); 
+    await connectDatabase();
 
     const {
-      name,
-      additionalInfo,
-      productBrandName,
-      phoneNumber,
-      email,
-      mainContactPersonId,
-      website,
+      title,
+      status,
+      linkedType,
+      linkedTo,
+      assignedType,
+      assignedTo,
+      priority,
+      dueDate,
     } = await request.json();
 
     // Validate required fields
     if (
-      !name ||
-      !additionalInfo ||
-      !productBrandName ||
-      !phoneNumber ||
-      !email ||
-      !mainContactPersonId ||
-      !website
+      !title ||
+      !status ||
+      !linkedType ||
+      !linkedTo ||
+      !assignedType ||
+      !assignedTo ||
+      !priority ||
+      !dueDate
     ) {
       return new Response(
         JSON.stringify({
@@ -38,22 +40,23 @@ export const POST = async (request) => {
       );
     }
 
-    const newPartner = await Patners.create({
-      name,
-      additionalInfo,
-      productBrandName,
-      phoneNumber,
-      email,
-      mainContactPersonId,
-      website,
+    const newTasks = await Tasks.create({
+      title,
+      status,
+      linkedType,
+      linkedTo,
+      assignedType,
+      assignedTo,
+      priority,
+      dueDate,
     });
 
     return new Response(
       JSON.stringify({
         success: true,
-        status: 201, 
-        message: "Partner registered successfully",
-        data: newPartner,
+        status: 201,
+        message: "Tasks registered successfully",
+        data: newTasks,
       }),
       {
         headers: { "Content-Type": "application/json" },
@@ -61,13 +64,13 @@ export const POST = async (request) => {
       }
     );
   } catch (error) {
-    console.error("Error in POST /api/partners:", error);
+    console.error("Error in POST /api/Tasks:", error);
     return new Response(
       JSON.stringify({
         success: false,
         status: 500,
         error: "Internal Server Error",
-        details: error.message, 
+        details: error.message,
       }),
       {
         headers: { "Content-Type": "application/json" },
@@ -80,7 +83,7 @@ export const POST = async (request) => {
 export const GET = async (request) => {
   try {
     await connectDatabase();
-    const data = await Patners.find(); 
+    const data = await Tasks.find();
     return new Response(
       JSON.stringify({
         success: true,
@@ -93,18 +96,19 @@ export const GET = async (request) => {
       }
     );
   } catch (error) {
-    console.error("Error in GET /api/partners:", error); 
+    console.error("Error in GET /api/Tasks:", error);
     return new Response(
       JSON.stringify({
         success: false,
         status: 500,
         error: "Internal Server Error",
-        details: error.message, 
+        details: error.message,
       }),
       {
         headers: { "Content-Type": "application/json" },
         status: 500,
       }
     );
+    console.log(data);
   }
 };

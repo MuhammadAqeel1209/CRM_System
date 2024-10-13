@@ -46,7 +46,7 @@ const Sidebar = () => {
         <Link href="/Task" legacyBehavior>
           <a className="flex items-center py-2 px-6 text-gray-700 hover:bg-gray-200">
             <FaFileAlt className="mr-3" />
-            Task
+            Task Management
           </a>
         </Link>
         <Link href="/ClientApp" legacyBehavior>

@@ -1,38 +1,90 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import Navbar from '../Components/Navbar';
-import Sidebar from '../Components/Sidebar';
-import axios from 'axios';
+"use client";
+import React, { useState, useEffect } from "react";
+import Navbar from "../Components/Navbar";
+import Sidebar from "../Components/Sidebar";
+import axios from "axios";
 
 const ClientApp = () => {
-  const [clientPolicies, setClientPolicies] = useState([]);
   const [notifications, setNotifications] = useState([]);
-  const [selectedPolicy, setSelectedPolicy] = useState(null);
+  const [contactMessage, setContactMessage] = useState("");
+  const [advisorId, setAdvisorId] = useState("");
+  const [advisors, setAdvisors] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isFormVisible, setIsFormVisible] = useState(false);
 
-  // Fetch client policies and notifications on component mount
-  // useEffect(() => {
-  //   const fetchPoliciesAndNotifications = async () => {
-  //     try {
-  //       const [policiesResponse, notificationsResponse] = await Promise.all([
-  //         axios.get('/api/client/policies'), // Adjust endpoint as needed
-  //         axios.get('/api/client/notifications'), // Adjust endpoint as needed
-  //       ]);
-  //       setClientPolicies(policiesResponse.data.policies);
-  //       setNotifications(notificationsResponse.data.notifications);
-  //     } catch (error) {
-  //       console.error('Error fetching policies or notifications:', error);
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get("/api/contracts");
+        if (response.data.success && Array.isArray(response.data.data)) {
+          setNotifications(response.data.data);
+        } else {
+          setError("Unexpected response from the server.");
+        }
+      } catch {
+        setError("Failed to fetch contracts. Please try again later.");
+      }
+    };
 
-  //   fetchPoliciesAndNotifications();
-  // }, []);
+    const fetchAdvisors = async () => {
+      try {
+        const response = await axios.get("/api/advisors");
+        if (response.data.success && Array.isArray(response.data.data)) {
+          setAdvisors(response.data.data);
+        } else {
+          setError("Unexpected response from the server.");
+        }
+      } catch {
+        setError("Failed to fetch advisors. Please try again later.");
+      }
+    };
 
-  const handlePolicyClick = (policy) => {
-    setSelectedPolicy(policy); // Show detailed view of selected policy
+    const fetchMessages = async () => {
+      try {
+        const response = await axios.get("/api/msg");
+        if (response.data.success && Array.isArray(response.data.data)) {
+          setMessages(response.data.data);
+        } else {
+          setError("Unexpected response from the server.");
+        }
+      } catch {
+        setError("Failed to fetch messages. Please try again later.");
+      }
+    };
+
+    fetchNotifications();
+    fetchAdvisors();
+    fetchMessages(); // Fetch messages when the component mounts
+  }, []);
+
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    const advisor = advisors.find((advisor) => advisor._id === advisorId);
+
+    try {
+      const response = await axios.post("/api/msg", {
+        advisorName: advisor ? advisor.name : "",
+        message: contactMessage,
+      });
+      if (response.data.success) {
+        setSuccessMessage("Message sent successfully!");
+        setContactMessage("");
+        setIsFormVisible(false);
+      } else {
+        setError("Failed to send message. Please try again.");
+      }
+    } catch {
+      setError("An error occurred while sending the message.");
+    }
   };
 
-  const handleCloseDetail = () => {
-    setSelectedPolicy(null); // Close detailed view
+  const handleContactClick = (id) => {
+    setAdvisorId(id);
+    setIsFormVisible(true);
+    setSuccessMessage("");
+    setError(null);
   };
 
   return (
@@ -45,73 +97,117 @@ const ClientApp = () => {
 
           {/* Notifications */}
           <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
-            <h2 className="font-semibold">Notifications</h2>
-            <ul className="list-disc list-inside">
-              {notifications.map(notification => (
-                <li key={notification.id}>{notification.message}</li>
+            <h2 className="font-semibold text-xl">Notifications</h2>
+            <ul className="space-y-4 mt-2">
+              {notifications.map((notification) => (
+                <li
+                  key={notification._id}
+                  className="bg-white shadow-md rounded-lg p-4 flex flex-col"
+                >
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-bold">
+                      Company Name: {notification.companyName}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {new Date(notification.startDate).toLocaleDateString(
+                        "en-US"
+                      )}
+                    </span>
+                  </div>
+                  <div className="text-sm mb-2">
+                    <span className="font-semibold">Type: </span>
+                    {notification.contractType}
+                  </div>
+                  <div className="text-sm mb-2">
+                    <span className="font-semibold">Status: </span>
+                    {notification.status}
+                  </div>
+                  <div className="text-sm mb-2">
+                    <span className="font-semibold">Application Status: </span>
+                    {notification.applicationStatus}
+                  </div>
+                  <div className="text-sm text-gray-500 mt-2">
+                    <span className="font-semibold">Expiry Date: </span>
+                    {new Date(notification.expiryDate).toLocaleDateString(
+                      "en-US"
+                    )}
+                  </div>
+                </li>
               ))}
             </ul>
           </div>
 
-          {/* Policies Overview */}
-          <div className="overflow-x-auto">
-            <h2 className="text-xl font-semibold mb-2">Client Policies</h2>
-            <table className="min-w-full bg-white shadow rounded-lg">
-              <thead>
-                <tr>
-                  <th className="py-2 px-4 border-b">Policy Number</th>
-                  <th className="py-2 px-4 border-b">Company</th>
-                  <th className="py-2 px-4 border-b">Status</th>
-                  <th className="py-2 px-4 border-b">Expiry Date</th>
-                  <th className="py-2 px-4 border-b">Advisor</th>
-                </tr>
-              </thead>
-              <tbody>
-                {clientPolicies.map(policy => (
-                  <tr
-                    key={policy.policyNumber}
-                    onClick={() => handlePolicyClick(policy)}
-                    className="cursor-pointer hover:bg-gray-100"
+          {/* Advisor Information */}
+          <div className="bg-white p-4 shadow-md rounded-lg mb-4">
+            <h2 className="text-xl font-semibold mb-4">Advisor Information</h2>
+            <ul className="space-y-2">
+              {advisors.map((advisor) => (
+                <li
+                  key={advisor._id}
+                  className="flex justify-between items-center p-2 border-b"
+                >
+                  <div>
+                    <span className="font-bold">{advisor.name}</span>
+                    <div className="text-sm">Phone: {advisor.phoneNumber}</div>
+                    <div className="text-sm">Email: {advisor.email}</div>
+                  </div>
+                  <button
+                    onClick={() => handleContactClick(advisor._id)}
+                    className="bg-blue-500 text-white px-2 py-1 rounded"
                   >
-                    <td className="py-2 px-4 border-b">{policy.policyNumber}</td>
-                    <td className="py-2 px-4 border-b">{policy.company}</td>
-                    <td className="py-2 px-4 border-b">{policy.status}</td>
-                    <td className="py-2 px-4 border-b">{policy.expiryDate}</td>
-                    <td className="py-2 px-4 border-b">{policy.advisor.name}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    Contact
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* Policy Detail Modal */}
-          {selectedPolicy && (
-            <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-              <div className="bg-white p-6 shadow-lg rounded-lg w-1/2">
-                <h2 className="text-xl font-semibold mb-4">Policy Details</h2>
-                <p><strong>Policy Number:</strong> {selectedPolicy.policyNumber}</p>
-                <p><strong>Company:</strong> {selectedPolicy.company}</p>
-                <p><strong>Status:</strong> {selectedPolicy.status}</p>
-                <p><strong>Expiry Date:</strong> {selectedPolicy.expiryDate}</p>
-                <h3 className="font-semibold mt-4">Advisor Information</h3>
-                <p><strong>Name:</strong> {selectedPolicy.advisor.name}</p>
-                <p><strong>Email:</strong> {selectedPolicy.advisor.email}</p>
-                <p><strong>Phone:</strong> {selectedPolicy.advisor.phone}</p>
-                <div className="flex justify-end mt-4">
-                  <button
-                    onClick={handleCloseDetail}
-                    className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-                  >
-                    Close
-                  </button>
-                  <a
-                    href={`mailto:${selectedPolicy.advisor.email}`}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ml-2"
-                  >
-                    Contact Advisor
-                  </a>
-                </div>
-              </div>
+          {/* Messages */}
+          <div className="bg-white p-4 shadow-md rounded-lg mb-4">
+            <h2 className="text-xl font-semibold mb-4">Messages</h2>
+            <ul className="space-y-2">
+              {messages.map((message) => (
+                <li key={message._id} className="p-2 border-b">
+                  <div className="font-semibold">{message.advisorName}</div>
+                  <div className="text-sm">{message.message}</div>
+                  <div className="text-xs text-gray-500">
+                    {new Date(message.createdAt).toLocaleDateString("en-US")}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {successMessage && (
+            <div className="text-green-500 mb-4">{successMessage}</div>
+          )}
+          {error && <div className="text-red-500 mb-4">{error}</div>}
+
+          {/* Contact Form */}
+          {isFormVisible && (
+            <div>
+              <h2 className="text-xl font-semibold mb-4">
+                Contact Your Advisor
+              </h2>
+              <form
+                onSubmit={handleContactSubmit}
+                className="bg-white p-4 shadow-md rounded-lg"
+              >
+                <textarea
+                  className="w-full border border-gray-300 rounded-md p-2 mb-2"
+                  rows="4"
+                  value={contactMessage}
+                  onChange={(e) => setContactMessage(e.target.value)}
+                  placeholder="Type your message here..."
+                  required
+                />
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                >
+                  Send Message
+                </button>
+              </form>
             </div>
           )}
         </main>

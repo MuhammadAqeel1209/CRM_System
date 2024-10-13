@@ -6,11 +6,12 @@ import {
   FaFileAlt,
   FaUsers,
   FaCog,
+  FaUser,
 } from "react-icons/fa";
 
 const Sidebar = () => {
   return (
-    <aside className="w-64 bg-white shadow-md">
+    <aside className="w-64 bg-white shadow-md h-full">
       <div className="p-4 text-2xl font-bold">CRM System</div>
       <nav className="mt-10">
         <Link href="/" legacyBehavior>
@@ -53,6 +54,12 @@ const Sidebar = () => {
           <a className="flex items-center py-2 px-6 text-gray-700 hover:bg-gray-200">
             <FaFileAlt className="mr-3" />
             Client App
+          </a>
+        </Link>
+        <Link href="/Advisor" legacyBehavior>
+          <a className="flex items-center py-2 px-6 text-gray-700 hover:bg-gray-200">
+            <FaUser className="mr-3" />
+            Advisor
           </a>
         </Link>
       </nav>

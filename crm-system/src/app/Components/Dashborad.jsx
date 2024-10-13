@@ -59,12 +59,17 @@ const Dashborad = () => {
             <DashboardCard
               title="Tasks"
               value={stats["tasks"]}
-              icon={<FaTasks size={30} className="text-yellow-500" />}
+              icon={<FaTasks size={30} className="text-blue-500" />}
             />
             <DashboardCard
               title="Partners"
               value={stats["partners"]}
               icon={<FaHandshake size={30} className="text-yellow-500" />}
+            />
+            <DashboardCard
+              title="Advisor"
+              value={stats["advisors"]}
+              icon={<FaUsers size={30} className="text-orange-500" />}
             />
             <DashboardCard
               title="KPI Score"

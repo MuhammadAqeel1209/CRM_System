@@ -5,63 +5,84 @@ import {
   FaAddressBook,
   FaFileAlt,
   FaUsers,
-  FaCog,
-  FaUser,
+  FaDatabase 
 } from "react-icons/fa";
+import Image from "next/image";
 
 const Sidebar = () => {
   return (
-    <aside className="w-64 bg-white shadow-md h-full">
-      <div className="p-4 text-2xl font-bold">CRM System</div>
+    <aside className="w-64 bg-white text-gray-800 shadow-md h-full">
+      <div className="p-6 flex items-center space-x-4">
+        <Image src={'/assets/img/logo.jpg'} width={100} height={100} alt="Logo" />
+        <h2 className="text-2xl font-extrabold tracking-wide">Viawin Project CRM</h2>
+      </div>
       <nav className="mt-10">
-        <Link href="/" legacyBehavior>
-          <a className="flex items-center py-2 px-6 text-gray-700 hover:bg-gray-200">
-            <FaHome className="mr-3" />
-            Dashboard
-          </a>
-        </Link>
-        <Link href="/Contracts" legacyBehavior>
-          <a className="flex items-center py-2 px-6 text-gray-700 hover:bg-gray-200">
-            <FaFileAlt className="mr-3" />
-            Contracts
-          </a>
-        </Link>
-        <Link href="/Contacts" legacyBehavior>
-          <a className="flex items-center py-2 px-6 text-gray-700 hover:bg-gray-200">
-            <FaAddressBook className="mr-3" />
-            Contacts
-          </a>
-        </Link>
-        <Link href="/Users" legacyBehavior>
-          <a className="flex items-center py-2 px-6 text-gray-700 hover:bg-gray-200">
-            <FaUsers className="mr-3" />
-            Users
-          </a>
-        </Link>
-        <Link href="/Partner" legacyBehavior>
-          <a className="flex items-center py-2 px-6 text-gray-700 hover:bg-gray-200">
-            <FaFileAlt className="mr-3" />
-            Partner Overview
-          </a>
-        </Link>
-        <Link href="/Task" legacyBehavior>
-          <a className="flex items-center py-2 px-6 text-gray-700 hover:bg-gray-200">
-            <FaFileAlt className="mr-3" />
-            Task Management
-          </a>
-        </Link>
-        <Link href="/ClientApp" legacyBehavior>
-          <a className="flex items-center py-2 px-6 text-gray-700 hover:bg-gray-200">
-            <FaFileAlt className="mr-3" />
-            Client App
-          </a>
-        </Link>
-        <Link href="/Advisor" legacyBehavior>
-          <a className="flex items-center py-2 px-6 text-gray-700 hover:bg-gray-200">
-            <FaUser className="mr-3" />
-            Advisor
-          </a>
-        </Link>
+        <ul className="space-y-2">
+          <li>
+            <Link href="/" legacyBehavior>
+              <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
+                <FaHome className="mr-3" />
+                Dashboard
+              </a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/Contracts" legacyBehavior>
+              <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
+                <FaFileAlt className="mr-3" />
+                Contracts
+              </a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/Contacts" legacyBehavior>
+              <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
+                <FaAddressBook className="mr-3" />
+                Contacts
+              </a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/Users" legacyBehavior>
+              <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
+                <FaUsers className="mr-3" />
+                Users
+              </a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/Partner" legacyBehavior>
+              <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
+                <FaFileAlt className="mr-3" />
+                Partner Overview
+              </a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/Task" legacyBehavior>
+              <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
+                <FaFileAlt className="mr-3" />
+                Task Management
+              </a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/ClientApp" legacyBehavior>
+              <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
+                <FaFileAlt className="mr-3" />
+                Client App
+              </a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/CollectionData" legacyBehavior>
+              <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
+                <FaDatabase className="mr-3" />
+                Collection Data
+              </a>
+            </Link>
+          </li>
+        </ul>
       </nav>
     </aside>
   );

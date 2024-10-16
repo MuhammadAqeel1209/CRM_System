@@ -67,8 +67,8 @@ const Dashborad = () => {
               icon={<FaHandshake size={30} className="text-yellow-500" />}
             />
             <DashboardCard
-              title="Advisor"
-              value={stats["advisors"]}
+              title="Users"
+              value={stats["users"]}
               icon={<FaUsers size={30} className="text-orange-500" />}
             />
             <DashboardCard

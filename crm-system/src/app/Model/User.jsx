@@ -1,9 +1,9 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
   role: {
     type: String,
-    enum: ['Admin', 'Team Leader', 'Advisor'], // Define roles
+    enum: ["Admin", "Team Leader", "Advisor"], // Define roles
     required: true,
   },
   firstName: {
@@ -17,6 +17,9 @@ const userSchema = new mongoose.Schema({
   phoneNumber: {
     type: String,
     required: true,
+  },
+  password: {
+    type: String,
   },
   email: {
     type: String,
@@ -37,5 +40,5 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-const User = mongoose.models.Users || mongoose.model('Users', userSchema);
+const User = mongoose.models.Users || mongoose.model("Users", userSchema);
 module.exports = User;

@@ -9,11 +9,8 @@ const ClientApp = () => {
   const [contactMessage, setContactMessage] = useState("");
   const [advisorId, setAdvisorId] = useState("");
   const [advisors, setAdvisors] = useState([]);
-  const [messages, setMessages] = useState([]);
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [isFormVisible, setIsFormVisible] = useState(false);
-
+  
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -30,9 +27,11 @@ const ClientApp = () => {
 
     const fetchAdvisors = async () => {
       try {
-        const response = await axios.get("/api/advisors");
+        const response = await axios.get("/api/users");
         if (response.data.success && Array.isArray(response.data.data)) {
-          setAdvisors(response.data.data);
+          // Filter users where role is 'Advisor' and set them to advisors
+          const advisors = response.data.data.filter(user => user.role === "Advisor");
+          setAdvisors(advisors);
         } else {
           setError("Unexpected response from the server.");
         }
@@ -40,52 +39,12 @@ const ClientApp = () => {
         setError("Failed to fetch advisors. Please try again later.");
       }
     };
+    
 
-    const fetchMessages = async () => {
-      try {
-        const response = await axios.get("/api/msg");
-        if (response.data.success && Array.isArray(response.data.data)) {
-          setMessages(response.data.data);
-        } else {
-          setError("Unexpected response from the server.");
-        }
-      } catch {
-        setError("Failed to fetch messages. Please try again later.");
-      }
-    };
-
+    
     fetchNotifications();
     fetchAdvisors();
-    fetchMessages(); // Fetch messages when the component mounts
-  }, []);
-
-  const handleContactSubmit = async (e) => {
-    e.preventDefault();
-    const advisor = advisors.find((advisor) => advisor._id === advisorId);
-
-    try {
-      const response = await axios.post("/api/msg", {
-        advisorName: advisor ? advisor.name : "",
-        message: contactMessage,
-      });
-      if (response.data.success) {
-        setSuccessMessage("Message sent successfully!");
-        setContactMessage("");
-        setIsFormVisible(false);
-      } else {
-        setError("Failed to send message. Please try again.");
-      }
-    } catch {
-      setError("An error occurred while sending the message.");
-    }
-  };
-
-  const handleContactClick = (id) => {
-    setAdvisorId(id);
-    setIsFormVisible(true);
-    setSuccessMessage("");
-    setError(null);
-  };
+   }, []);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -147,69 +106,16 @@ const ClientApp = () => {
                   className="flex justify-between items-center p-2 border-b"
                 >
                   <div>
-                    <span className="font-bold">{advisor.name}</span>
+                    <span className="font-bold"> Name: {advisor.firstName} {advisor.lastName}</span>
                     <div className="text-sm">Phone: {advisor.phoneNumber}</div>
                     <div className="text-sm">Email: {advisor.email}</div>
                   </div>
-                  <button
-                    onClick={() => handleContactClick(advisor._id)}
-                    className="bg-blue-500 text-white px-2 py-1 rounded"
-                  >
-                    Contact
-                  </button>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Messages */}
-          <div className="bg-white p-4 shadow-md rounded-lg mb-4">
-            <h2 className="text-xl font-semibold mb-4">Messages</h2>
-            <ul className="space-y-2">
-              {messages.map((message) => (
-                <li key={message._id} className="p-2 border-b">
-                  <div className="font-semibold">{message.advisorName}</div>
-                  <div className="text-sm">{message.message}</div>
-                  <div className="text-xs text-gray-500">
-                    {new Date(message.createdAt).toLocaleDateString("en-US")}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {successMessage && (
-            <div className="text-green-500 mb-4">{successMessage}</div>
-          )}
-          {error && <div className="text-red-500 mb-4">{error}</div>}
-
-          {/* Contact Form */}
-          {isFormVisible && (
-            <div>
-              <h2 className="text-xl font-semibold mb-4">
-                Contact Your Advisor
-              </h2>
-              <form
-                onSubmit={handleContactSubmit}
-                className="bg-white p-4 shadow-md rounded-lg"
-              >
-                <textarea
-                  className="w-full border border-gray-300 rounded-md p-2 mb-2"
-                  rows="4"
-                  value={contactMessage}
-                  onChange={(e) => setContactMessage(e.target.value)}
-                  placeholder="Type your message here..."
-                  required
-                />
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                >
-                  Send Message
-                </button>
-              </form>
-            </div>
-          )}
+          
         </main>
       </div>
     </div>

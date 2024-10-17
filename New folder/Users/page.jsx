@@ -3,12 +3,10 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../Components/Navbar";
 import Sidebar from "../Components/Sidebar";
 import axios from "axios";
-import bcrypt from "bcryptjs";
 import { FaPlus, FaTimes, FaEdit, FaTrash } from "react-icons/fa";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
-  const [userRole, setUserRole] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editUser, setEditUser] = useState(null);
@@ -27,12 +25,6 @@ const Users = () => {
     teamId: "",
   });
 
-  useEffect(() => {
-    // Retrieve user role from localStorage when the component mounts
-    const role = localStorage.getItem("userRole");
-    setUserRole(role); // Set the user role state
-  }, []);
-
   // Fetch users on component mount
   useEffect(() => {
     const fetchUsers = async () => {
@@ -40,6 +32,7 @@ const Users = () => {
       try {
         const response = await axios.get("/api/users");
         if (response.data.success && Array.isArray(response.data.data)) {
+          console.log(response.data.data);
           setUsers(response.data.data);
         } else {
           console.error("Unexpected API response structure:", response.data);
@@ -64,26 +57,10 @@ const Users = () => {
     e.preventDefault();
     setLoading(true);
     setError(null); // Reset error state
-
     try {
-      // Hash the password before sending it to the server
-      const saltRounds = 10; // Salt rounds for hashing, usually between 10-12 is good
-      const hashedPassword = await bcrypt.hash(newUser.password, saltRounds);
-
-      // Update newUser object with the hashed password
-      const userWithHashedPassword = {
-        ...newUser,
-        password: hashedPassword,
-      };
-
-      // Send the user data to the server via POST request
-      const response = await axios.post("/api/users", userWithHashedPassword);
-
+      const response = await axios.post("/api/users", newUser);
       if (response.data.success && response.data.data) {
-        // Successfully added user, update the state
         setUsers([...users, response.data.data]);
-
-        // Reset form state
         setNewUser({
           role: "",
           firstName: "",
@@ -96,8 +73,6 @@ const Users = () => {
           location: "",
           teamId: "",
         });
-
-        // Hide the form after successful submission
         setShowForm(false);
       } else {
         console.error("Unexpected API response on POST:", response.data);
@@ -107,7 +82,7 @@ const Users = () => {
       console.error("Error adding user:", error);
       setError("Failed to add user. Please check your input and try again.");
     } finally {
-      setLoading(false); // Stop loading state regardless of success or failure
+      setLoading(false);
     }
   };
 
@@ -521,75 +496,51 @@ const Users = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {userRole ? (
-                    users.length > 0 ? (
-                      users
-                        .filter((user) => {
-                          if (userRole === '"Admin"') {
-                            return true; // Show all users for admin
-                          } else if (userRole === '"Advisor"') {
-                            return user.role === "Advisor"; // Show only advisor data
-                          } else if (userRole === '"Team Leader"') {
-                            return (
-                              user.role === "Advisor" || user.role === "Team Leader"
-                            ); // Show both advisor and user roles
-                          }
-                          return false; 
-                        })
-                        .map((user) => (
-                          <tr key={user._id} className="hover:bg-gray-50">
-                            <td className="py-2 border-b text-center">
-                              {user.role}
-                            </td>
-                            <td className="py-2 border-b text-center">
-                              {user.firstName}
-                            </td>
-                            <td className="py-2 border-b text-center">
-                              {user.lastName}
-                            </td>
-                            <td className="py-2 border-b text-center">
-                              {user.phoneNumber}
-                            </td>
-                            <td className="py-2 border-b text-center">
-                              {user.email}
-                            </td>
-                            <td className="py-2 border-b text-center">
-                              {new Date(user.dateOfBirth).toLocaleDateString()}
-                            </td>
-                            <td className="py-2 border-b text-center">
-                              {user.position}
-                            </td>
-                            <td className="py-2 border-b text-center">
-                              {user.location}
-                            </td>
-                            <td className="py-2 border-b text-center space-x-2">
-                              <button
-                                onClick={() => handleEditUser(user)}
-                                className="text-blue-500 hover:text-blue-700 transition duration-200"
-                                aria-label="Edit user"
-                              >
-                                <FaEdit />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteUser(user._id)}
-                                className="text-red-500 hover:text-red-700 transition duration-200"
-                                aria-label="Delete user"
-                              >
-                                <FaTrash />
-                              </button>
-                            </td>
-                          </tr>
-                        ))
-                    ) : (
-                      <tr>
-                        <td
-                          colSpan="9"
-                          className="py-4 text-center text-gray-500"
-                        >
-                          No users found.
+                  {users.length > 0 ? (
+                    users.map((user) => (
+                      <tr key={user._id} className="hover:bg-gray-50">
+                        <td className="py-2 border-b text-center">
+                          {user.role}
+                        </td>
+                        <td className="py-2 border-b text-center">
+                          {user.firstName}
+                        </td>
+                        <td className="py-2 border-b text-center">
+                          {user.lastName}
+                        </td>
+                        <td className="py-2 border-b text-center">
+                          {user.phoneNumber}
+                        </td>
+                        <td className="py-2 border-b text-center">
+                          {user.email}
+                        </td>
+                        <td className="py-2 border-b text-center">
+                          {new Date(user.dateOfBirth).toLocaleDateString()}
+                        </td>
+                        <td className="py-2 border-b text-center">
+                          {user.position}
+                        </td>
+                        <td className="py-2 border-b text-center">
+                          {user.location}
+                        </td>
+                        <td className="py-2 border-b text-center space-x-2">
+                          <button
+                            onClick={() => handleEditUser(user)}
+                            className="text-blue-500 hover:text-blue-700 transition duration-200"
+                            aria-label="Edit user"
+                          >
+                            <FaEdit />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUser(user._id)}
+                            className="text-red-500 hover:text-red-700 transition duration-200"
+                            aria-label="Delete user"
+                          >
+                            <FaTrash />
+                          </button>
                         </td>
                       </tr>
-                    )
+                    ))
                   ) : (
                     <tr>
                       <td

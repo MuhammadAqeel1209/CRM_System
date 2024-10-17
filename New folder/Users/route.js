@@ -1,13 +1,36 @@
 import connectDatabase from "@/app/libs/mongodb";
-import ContactDetail from "@/app/Model/DataCollection";
+import Users from "@/app/Model/User";
+
 export const POST = async (request) => {
   try {
-    await connectDatabase(); // Connect to the database
+    await connectDatabase();
 
-    const { title, linkedTo, contactPhase, assignedTo } = await request.json();
+    const {
+      role,
+      firstName,
+      lastName,
+      phoneNumber,
+      password,
+      email,
+      dateOfBirth,
+      position,
+      location,
+      teamId,
+    } = await request.json();
 
     // Validate required fields
-    if (!title || !linkedTo || !contactPhase || !assignedTo) {
+    if (
+      (role,
+        !firstName||
+        !lastName||
+        !phoneNumber||
+        !password||
+        !email||
+        !dateOfBirth||
+        !position||
+        !location||
+        !teamId)
+    ) {
       return new Response(
         JSON.stringify({
           success: false,
@@ -21,16 +44,25 @@ export const POST = async (request) => {
       );
     }
 
-    const newContactDetail = await ContactDetail.create({
-        title, linkedTo, contactPhase, assignedTo 
+    const newUsers = await Users.create({
+      role,
+      firstName,
+      lastName,
+      phoneNumber,
+      password,
+      email,
+      dateOfBirth,
+      position,
+      location,
+      teamId,
     });
 
     return new Response(
       JSON.stringify({
         success: true,
-        status: 201, // Use 201 for resource creation
-        message: "ContactDetail registered successfully",
-        data: newContactDetail,
+        status: 201,
+        message: "Users registered successfully",
+        data: newUsers,
       }),
       {
         headers: { "Content-Type": "application/json" },
@@ -38,12 +70,13 @@ export const POST = async (request) => {
       }
     );
   } catch (error) {
-    console.error("Error in POST /api/ContactDetails:", error);
+    console.error("Error in POST /api/Users:", error);
     return new Response(
       JSON.stringify({
         success: false,
         status: 500,
         error: "Internal Server Error",
+        details: error.message,
       }),
       {
         headers: { "Content-Type": "application/json" },
@@ -56,7 +89,7 @@ export const POST = async (request) => {
 export const GET = async (request) => {
   try {
     await connectDatabase();
-    const data = await ContactDetail.find();
+    const data = await Users.find();
     return new Response(
       JSON.stringify({
         success: true,
@@ -69,12 +102,13 @@ export const GET = async (request) => {
       }
     );
   } catch (error) {
-    console.error(error);
+    console.error("Error in GET /api/Users:", error);
     return new Response(
       JSON.stringify({
         success: false,
         status: 500,
         error: "Internal Server Error",
+        details: error.message,
       }),
       {
         headers: { "Content-Type": "application/json" },

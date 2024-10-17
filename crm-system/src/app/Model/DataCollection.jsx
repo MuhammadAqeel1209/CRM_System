@@ -9,21 +9,23 @@ const contactDataSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  linkedTo: {
+  linkedToContactId: {
     contact: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Contacts', 
-    },
+    }
+  },
+    linkedToContractId:{
     contract: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Contracts',
-    },
+    }
   },
   contactPhase: {
     type: String,
     required: true,
   },
-  assignedTo: {
+  assignedToUserId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Users', 
     required: true,

@@ -1,10 +1,13 @@
 "use client";
 import React from "react";
-import Navbar from "./Navbar";
-import Sidebar from "./Sidebar";
-import DashboardCard from "./DashboardCard";
+import Navbar from "@/app/Components/Navbar";
+import Sidebar from "@/app/Components/Sidebar";
+import DashboardCard from "@/app/Components/DashboardCard";
 import Link from "next/link";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import { isAuthenticated } from "../Utils/Auth";
+import { useLayoutEffect } from "react";
 import { useEffect, useState } from "react";
 import {
   FaUsers,
@@ -24,6 +27,14 @@ import {
 const Dashborad = () => {
   const [stats, setStats] = useState([]);
   const [error, setError] = useState([]);
+  const router = useRouter()
+
+  useLayoutEffect(() => {
+    if (!isAuthenticated()) {
+      router.push("/");
+    }
+}, [router]);
+
 
   useEffect(() => {
     axios

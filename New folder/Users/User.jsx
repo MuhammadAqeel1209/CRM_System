@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema({
   role: {
     type: String,
-    enum: ["Admin", "Team Leader", "Advisor"], // Define roles
+    enum: ["Admin", "Team Leader", "Advisor"], 
     required: true,
   },
   firstName: {
@@ -20,7 +20,6 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required : true,
   },
   email: {
     type: String,
@@ -39,7 +38,16 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  teamId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Users',
+    validate: {
+      validator: function(value) {
+        return this.role === 'Advisor' ? value != null : value === null;
+      },
+    },
+  },
 });
 
 const User = mongoose.models.Users || mongoose.model("Users", userSchema);
-module.exports = User;
+export default User;

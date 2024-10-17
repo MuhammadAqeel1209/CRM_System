@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import  connectDatabase  from "@/app/libs/mongodb";
-import ContactDetail from "@/app/Model/DataCollection"; 
+import Users from '@/app/Model/User';
 
 export async function PUT(request, { params }) {
   await connectDatabase();
@@ -8,7 +8,7 @@ export async function PUT(request, { params }) {
   const data = await request.json();
   console.log(id)
   try {
-    let ContactDetail = await ContactDetail.findByIdAndUpdate(id, data);
+    let contract = await Users.findByIdAndUpdate(id, data);
     return NextResponse.json({ message: "Record updated", data }, { status: 200 });
   } catch (error) {
     console.error("Error updating record:", error);
@@ -20,7 +20,7 @@ export async function GET(request, { params }) {
   const { id } = params;
   await connectDatabase();
   try {
-    const table = await ContactDetail.findOne({ _id: id });
+    const table = await Users.findOne({ _id: id });
     if (!table) {
       return NextResponse.error(new Error("Record not found"), { status: 404 });
     }
@@ -35,7 +35,7 @@ export async function DELETE(request, { params }) {
   const { id } = params;
   await connectDatabase();
   try {
-    const deletedRecord = await ContactDetail.findByIdAndDelete(id);
+    const deletedRecord = await Users.findByIdAndDelete(id);
     if (!deletedRecord) {
       return NextResponse.error(new Error("Record not found"), { status: 404 });
     }

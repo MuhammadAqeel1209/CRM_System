@@ -100,7 +100,8 @@ const Sidebar = () => {
             </>
           )}
 
-          {userRole === '"Advisor"' && (
+          {userRole === '"Advisor"' && ( 
+            <>
             <li>
               <Link href="/Users" legacyBehavior>
                 <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
@@ -109,9 +110,35 @@ const Sidebar = () => {
                 </a>
               </Link>
             </li>
+            <li>
+            <Link href="/Dashboard" legacyBehavior>
+              <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
+                <FaHome className="mr-3" />
+                Dashboard
+              </a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/Contracts" legacyBehavior>
+              <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
+                <FaFileAlt className="mr-3" />
+                Contracts
+              </a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/Contacts" legacyBehavior>
+              <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
+                <FaAddressBook className="mr-3" />
+                Contacts
+              </a>
+            </Link>
+          </li>
+          </>
           )}
 
           {userRole === '"Team Leader"' && (
+            <>
             <li>
               <Link href="/Users" legacyBehavior>
                 <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
@@ -120,6 +147,31 @@ const Sidebar = () => {
                 </a>
               </Link>
             </li>
+            <li>
+            <Link href="/Dashboard" legacyBehavior>
+              <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
+                <FaHome className="mr-3" />
+                Dashboard
+              </a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/Contracts" legacyBehavior>
+              <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
+                <FaFileAlt className="mr-3" />
+                Contracts
+              </a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/Contacts" legacyBehavior>
+              <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
+                <FaAddressBook className="mr-3" />
+                Contacts
+              </a>
+            </Link>
+          </li>
+          </>
           )}
         </ul>
       </nav>

@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { InlineWidget } from "react-calendly";
-import EventList from '../Components/EventList';
 import Navbar from '../Components/Navbar';
 import Sidebar from '../Components/Sidebar';
 
@@ -17,7 +16,7 @@ const Page = () => {
               <h1 className="text-3xl font-bold">Calendar Overview</h1>
             </div>
             <div className="calendar-widget">
-              <InlineWidget url="https://calendly.com/muhammadaqeelshakeel1209/30min" />
+              <InlineWidget url="https://calendly.com/presleytinasankul/30min" />
             </div>
           </div>
         </main>

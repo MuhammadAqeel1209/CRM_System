@@ -34,24 +34,24 @@ const Users = () => {
   }, []);
 
   // Fetch users on component mount
-  useEffect(() => {
-    const fetchUsers = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get("/api/users");
-        if (response.data.success && Array.isArray(response.data.data)) {
-          setUsers(response.data.data);
-        } else {
-          console.error("Unexpected API response structure:", response.data);
-          setError("Unexpected response from the server.");
-        }
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        setError("Failed to fetch users. Please try again later.");
-      } finally {
-        setLoading(false);
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get("/api/users");
+      if (response.data.success && Array.isArray(response.data.data)) {
+        setUsers(response.data.data);
+      } else {
+        console.error("Unexpected API response structure:", response.data);
+        setError("Unexpected response from the server.");
       }
-    };
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setError("Failed to fetch users. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchUsers();
   }, []);
 
@@ -161,40 +161,28 @@ const Users = () => {
   };
 
   // Update User Function
-  const handleUpdateSubmit = (e) => {
+  const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
-    axios
-      .put(`/api/users/${editUser._id}`, editUser)
-      .then((response) => {
-        if (response.data.success && response.data.data) {
-          setUsers((prevUsers) =>
-            prevUsers.map((user) =>
-              user._id === editUser._id ? response.data.data : user
-            )
-          );
-          setLoading(false);
-          setIsEditing(false);
-          setEditUser(null);
-        } else {
-          console.error("Unexpected API response on PUT:", response.data);
-          setError("Unexpected response from the server.");
-        }
-      })
-      .catch((error) => {
-        console.error(
-          "Failed to update user:",
-          error.response?.data?.error || error.message
-        );
-        setError(
-          "Failed to update user. Please check your input and try again."
-        );
-      })
-      .finally(() => {
+  
+    try {
+      const response = await axios.put(`api/users/${editUser._id}`, editUser);
+      if (response.status === 200 && response.data.data) {
         setLoading(false);
-      });
+        setIsEditing(false);
+        setEditUser(null);
+        await fetchUsers()
+      } else {
+        console.error("Unexpected API response on PUT:", response.data);
+        setError("Unexpected response from the server.");
+      }
+    } catch (error) {
+      console.error("Failed to update user:", error.response?.data?.error || error.message);
+      setError("Failed to update user. Please check your input and try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Handle change in edit form fields

@@ -6,7 +6,6 @@ export async function PUT(request, { params }) {
   await connectDatabase();
   const { id } = params;
   const data = await request.json();
-  console.log(id);
   try {
     // Use the renamed import
     const updatedContactDetail = await ContactDetailModel.findByIdAndUpdate(id, data, { new: true });
@@ -25,6 +24,7 @@ export async function GET(request, { params }) {
   await connectDatabase();
   try {
     const table = await ContactDetailModel.findOne({ _id: id });
+    console.log(table)
     if (!table) {
       return NextResponse.error(new Error("Record not found"), { status: 404 });
     }

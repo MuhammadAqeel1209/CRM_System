@@ -11,6 +11,11 @@ export const POST = async (request) => {
       contactPhase,
       assignedToUserId,
     } = await request.json();
+    console.log(title,
+      linkedToContactId,
+      linkedToContractId,
+      contactPhase,
+      assignedToUserId,);
 
     // Validate required fields
     if ( ! title ||
@@ -71,6 +76,7 @@ export const GET = async (request) => {
   try {
     await connectDatabase();
     const data = await ContactDetail.find();
+    console.log
     return new Response(
       JSON.stringify({
         success: true,

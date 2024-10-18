@@ -28,35 +28,41 @@ const CollectionData = () => {
     const fetchData = async () => {
       try {
         // Fetching the users, contracts, and contacts in parallel
-        const [usersResponse, contractsResponse, contactsResponse] = await Promise.all([
-          axios.get("/api/users"),
-          axios.get("/api/contracts"),
-          axios.get("/api/contacts"),
-        ]);
-  
+        const [usersResponse, contractsResponse, contactsResponse] =
+          await Promise.all([
+            axios.get("/api/users"),
+            axios.get("/api/contracts"),
+            axios.get("/api/contacts"),
+          ]);
+
         // Setting the state based on API responses
         if (usersResponse.data && Array.isArray(usersResponse.data.data)) {
           setUsers(usersResponse.data.data);
-        } 
-  
-        if (contractsResponse.data && Array.isArray(contractsResponse.data.data)) {
+        }
+
+        if (
+          contractsResponse.data &&
+          Array.isArray(contractsResponse.data.data)
+        ) {
           setContracts(contractsResponse.data.data);
-        } 
-  
-        if (contactsResponse.data && Array.isArray(contactsResponse.data.data)) {
+        }
+
+        if (
+          contactsResponse.data &&
+          Array.isArray(contactsResponse.data.data)
+        ) {
           setContacts(contactsResponse.data.data);
-        } 
-        
+        }
       } catch (error) {
         // Set error message if fetching fails
         setError("Failed to fetch data.");
         console.error("Error fetching data:", error);
       }
     };
-  
-    fetchData();  // Call the fetch function
+
+    fetchData(); // Call the fetch function
   }, []);
-  
+
   useEffect(() => {
     const fetchCollection = async () => {
       try {
@@ -86,6 +92,7 @@ const CollectionData = () => {
     e.preventDefault();
     setError("");
     try {
+      console.log(newCollection);
       const response = await axios.post("/api/collections", newCollection);
       setCollection([
         ...collection,
@@ -288,46 +295,46 @@ const CollectionData = () => {
           <table className="min-w-full bg-white shadow rounded-lg">
             <thead>
               <tr>
-                <th className="py-2 px-4 border-b">Created On</th>
-                <th className="py-2 px-4 border-b">Title</th>
-                <th className="py-2 px-4 border-b">Linked to Contact</th>
-                <th className="py-2 px-4 border-b">Linked to Contract</th>
-                <th className="py-2 px-4 border-b">Phase Contact</th>
-                <th className="py-2 px-4 border-b">Assigned to</th>
-                <th className="py-2 px-4 border-b">Actions</th>
+                <th className="py-2 border-b">Created On</th>
+                <th className="py-2 border-b">Title</th>
+                <th className="py-2 border-b">Linked to Contact</th>
+                <th className="py-2 border-b">Linked to Contract</th>
+                <th className="py-2 border-b">Phase Contact</th>
+                <th className="py-2 border-b">Assigned to</th>
+                <th className="py-2 border-b">Actions</th>
               </tr>
             </thead>
             <tbody>
               {collection.map((collect) => (
                 <tr key={collect._id}>
-                  <td className="py-2 px-4 border-b">
+                  <td className="py-2 px-5 border-b">
                     {new Date(collect.createdOn).toLocaleDateString()}
                   </td>
-                  <td className="py-2 px-4 border-b">{collect.title}</td>
-                  <td className="py-2 px-4 border-b">
+                  <td className="py-2 px-7 border-b">{collect.title}</td>
+                  <td className="py-2 px-10 border-b">
                     {
                       contacts.find(
                         (contact) => contact._id === collect.linkedToContactId
                       )?.name
                     }
                   </td>
-                  <td className="py-2 px-4 border-b">
+                  <td className="py-2 px-10 border-b">
                     {
                       contracts.find(
-                        (contract) => contract._id === collect.linkedToContractId
+                        (contract) =>
+                          contract._id === collect.linkedToContractId
                       )?.companyName
                     }
                   </td>
-                  <td className="py-2 px-4 border-b">{collect.contactPhase}</td>
-
-                  <td className="py-2 px-4 border-b">
+                  <td className="py-2 px-7 border-b">{collect.contactPhase}</td>
+                  <td className="py-2 px-7 border-b">
                     {
                       users.find(
                         (user) => user._id === collect.assignedToUserId
                       )?.firstName
                     }
                   </td>
-                  <td className="py-2 px-4 border-b flex gap-2">
+                  <td className="py-2 px-7 border-b flex gap-2">
                     <button
                       onClick={() => handleEditCollection(collect)}
                       className="text-blue-500 hover:text-blue-700"

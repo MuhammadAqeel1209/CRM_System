@@ -10,16 +10,14 @@ const contactDataSchema = new mongoose.Schema({
     required: true,
   },
   linkedToContactId: {
-    contact: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Contacts', 
-    }
+      required : true,
   },
     linkedToContractId:{
-    contract: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Contracts',
-    }
+      required : true,
   },
   contactPhase: {
     type: String,

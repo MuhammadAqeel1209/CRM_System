@@ -5,6 +5,8 @@ import Sidebar from "../Components/Sidebar";
 import axios from "axios";
 import bcrypt from "bcryptjs";
 import { FaPlus, FaTimes, FaEdit, FaTrash } from "react-icons/fa";
+import { CheckCircleIcon } from "@heroicons/react/solid";
+import { useRouter } from "next/navigation";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -12,8 +14,10 @@ const Users = () => {
   const [showForm, setShowForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editUser, setEditUser] = useState(null);
-  const [loading, setLoading] = useState(false); // State for loading
-  const [error, setError] = useState(null); // State for errors
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [courseId, setCourseId] = useState(null);
   const [newUser, setNewUser] = useState({
     role: "",
     firstName: "",
@@ -26,11 +30,15 @@ const Users = () => {
     location: "",
     teamId: "",
   });
+  const router = useRouter()
 
   useEffect(() => {
     // Retrieve user role from localStorage when the component mounts
     const role = localStorage.getItem("userRole");
-    setUserRole(role); // Set the user role state
+    const userId = localStorage.getItem("userId");
+    const trimmedUserId = userId ? userId.trim().replace(/^"|"$/g, "") : null;
+    setUserRole(role);
+    setUserId(trimmedUserId);
   }, []);
 
   // Fetch users on component mount
@@ -40,6 +48,24 @@ const Users = () => {
       const response = await axios.get("/api/users");
       if (response.data.success && Array.isArray(response.data.data)) {
         setUsers(response.data.data);
+      } else {
+        console.error("Unexpected API respons)e structure:", response.data);
+        setError("Unexpected response from the server.");
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setError("Failed to fetch users. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCourseEnroll = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get("/api/enroll");
+      if (response.status == 200) {
+        setCourseId(response.data.data);
       } else {
         console.error("Unexpected API response structure:", response.data);
         setError("Unexpected response from the server.");
@@ -51,8 +77,10 @@ const Users = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchUsers();
+    fetchCourseEnroll();
   }, []);
 
   const handleInputChange = (e) => {
@@ -165,20 +193,23 @@ const Users = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-  
+
     try {
       const response = await axios.put(`api/users/${editUser._id}`, editUser);
       if (response.status === 200 && response.data.data) {
         setLoading(false);
         setIsEditing(false);
         setEditUser(null);
-        await fetchUsers()
+        await fetchUsers();
       } else {
         console.error("Unexpected API response on PUT:", response.data);
         setError("Unexpected response from the server.");
       }
     } catch (error) {
-      console.error("Failed to update user:", error.response?.data?.error || error.message);
+      console.error(
+        "Failed to update user:",
+        error.response?.data?.error || error.message
+      );
       setError("Failed to update user. Please check your input and try again.");
     } finally {
       setLoading(false);
@@ -190,6 +221,10 @@ const Users = () => {
     const { name, value } = e.target;
     setEditUser({ ...editUser, [name]: value });
   };
+
+  const checkProgress = () =>{
+    router.push("/Progress")
+  }
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -519,10 +554,11 @@ const Users = () => {
                             return user.role === "Advisor"; // Show only advisor data
                           } else if (userRole === '"Team Leader"') {
                             return (
-                              user.role === "Advisor" || user.role === "Team Leader"
+                              user.role === "Advisor" ||
+                              user.role === "Team Leader"
                             ); // Show both advisor and user roles
                           }
-                          return false; 
+                          return false;
                         })
                         .map((user) => (
                           <tr key={user._id} className="hover:bg-gray-50">

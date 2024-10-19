@@ -28,6 +28,7 @@ export default function Page() {
       if (response.data.success) {
         const user = response.data.data;
         localStorage.setItem('userRole', JSON.stringify(user.role));
+        localStorage.setItem('userId', JSON.stringify(user._id));
         router.push("/Dashboard");
       } else {
         setError(response.data.message || "Invalid email or password.");

@@ -13,11 +13,14 @@ const Page = () => {
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
+    const parsedRole = JSON.parse(role);
     const userId = localStorage.getItem("userId");
-    const trimmedUserId = userId ? userId.trim().replace(/^"|"$/g, "") : null;
-    setUserRole(role);
-    setUserId(trimmedUserId);
+    const parsedId = JSON.parse(userId);
+    setUserId(parsedId.value); 
+    setUserRole(parsedRole.value);
+
   }, []);
+
 
   const fetchCourseEnroll = () => {
     axios.get('/api/enroll')
@@ -96,7 +99,7 @@ const Page = () => {
                       const { courseTitle, courseObjectives } = getUserCourseDetails(user);
 
                       // Conditional rendering based on user role
-                      const isAuthorizedUser = userRole === '"Admin"' || user._id === userId; 
+                      const isAuthorizedUser = userRole === "Admin" || user._id === userId; 
                       
                       return (
                         isAuthorizedUser && (

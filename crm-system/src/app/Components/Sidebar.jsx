@@ -17,7 +17,8 @@ const Sidebar = () => {
   useEffect(() => {
     // Retrieve user role from localStorage when the component mounts
     const role = localStorage.getItem("userRole");
-    setUserRole(role); // Set the user role state
+    const parsedRole = JSON.parse(role);
+    setUserRole(parsedRole.value); // Set the user role state
   }, []);
 
   return (
@@ -35,7 +36,7 @@ const Sidebar = () => {
       </div>
       <nav className="mt-10">
         <ul className="space-y-2">
-          {userRole === '"Admin"' && (
+          {userRole === "Admin" && (
             <>
               <li>
                 <Link href="/Dashboard" legacyBehavior>
@@ -121,7 +122,7 @@ const Sidebar = () => {
             </>
           )}
 
-          {userRole === '"Advisor"' && (
+          {userRole === "Advisor" && (
             <>
               <li>
                 <Link href="/Users" legacyBehavior>
@@ -166,7 +167,7 @@ const Sidebar = () => {
             </>
           )}
 
-          {userRole === '"Team Leader"' && (
+          {userRole === "Team Leader" && (
             <>
               <li>
                 <Link href="/Users" legacyBehavior>

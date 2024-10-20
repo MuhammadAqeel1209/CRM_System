@@ -3,15 +3,42 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from 'next/navigation';
 
+// Set and get with expiration helper functions
+function setItemWithExpiry(key, value, expiryInMinutes) {
+  const now = new Date();
+  const item = {
+    value: value,
+    expiry: now.getTime() + expiryInMinutes * 60 * 1000, // Convert minutes to milliseconds
+  };
+  localStorage.setItem(key, JSON.stringify(item));
+}
+
+function getItemWithExpiry(key) {
+  const itemStr = localStorage.getItem(key);
+  if (!itemStr) {
+    return null;
+  }
+
+  const item = JSON.parse(itemStr);
+  const now = new Date();
+
+  if (now.getTime() > item.expiry) {
+    localStorage.removeItem(key);
+    return null;
+  }
+  console.log(item.value)
+  return item.value;
+}
+
 export default function Page() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const router = useRouter();
 
-  // Check if the user is already logged in
+  // Check if the user is already logged in with valid expiry
   useEffect(() => {
-    const userRole = localStorage.getItem('userRole');
+    const userRole = getItemWithExpiry('userRole');
     if (userRole) {
       router.push("/Dashboard");
     }
@@ -23,12 +50,12 @@ export default function Page() {
     setError(null); 
 
     try {
-      const response = await axios.post(`/api/login`, { email, password }); // Post request to check the user
+      const response = await axios.post(`/api/login`, { email, password });
 
       if (response.data.success) {
         const user = response.data.data;
-        localStorage.setItem('userRole', JSON.stringify(user.role));
-        localStorage.setItem('userId', JSON.stringify(user._id));
+        setItemWithExpiry('userRole', user.role, 60); // Expire in 60 minutes
+        setItemWithExpiry('userId', user._id, 60);   // Expire in 60 minutes
         router.push("/Dashboard");
       } else {
         setError(response.data.message || "Invalid email or password.");

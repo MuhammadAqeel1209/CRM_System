@@ -21,8 +21,22 @@ const Courses = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [role, setRole] = useState(localStorage.getItem("userRole"));
-  const [userId, setUserId] = useState(localStorage.getItem("userId")?.replace(/^"|"$/g, ""));
+  const [role, setRole] = useState([]);
+  const [userId, setUserId] = useState();
+
+  useEffect(() => {
+    // Retrieve user role from localStorage when the component mounts
+    const role = localStorage.getItem("userRole");
+    const parsedRole = JSON.parse(role);
+    setRole(parsedRole.value); // Set the user role state
+  }, []);
+
+  useEffect(() => {
+    // Retrieve user role from localStorage when the component mounts
+    const id = localStorage.getItem("userId");
+    const parsedId = JSON.parse(id);
+    setUserId(parsedId.value); 
+  }, []);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -60,7 +74,11 @@ const Courses = () => {
       if (response.data.success && response.data.data) {
         setCourses((prevCourses) => {
           return isEditing
-            ? prevCourses.map((course) => (course._id === response.data.data._id ? response.data.data : course))
+            ? prevCourses.map((course) =>
+                course._id === response.data.data._id
+                  ? response.data.data
+                  : course
+              )
             : [...prevCourses, response.data.data];
         });
         resetForm();
@@ -68,7 +86,11 @@ const Courses = () => {
         throw new Error("Unexpected response from the server.");
       }
     } catch (error) {
-      setError(`Failed to ${isEditing ? "update" : "add"} course. Please check your input and try again.`);
+      setError(
+        `Failed to ${
+          isEditing ? "update" : "add"
+        } course. Please check your input and try again.`
+      );
     } finally {
       setLoading(false);
     }
@@ -92,7 +114,9 @@ const Courses = () => {
       setLoading(true);
       try {
         await axios.delete(`/api/course/${id}`);
-        setCourses((prevCourses) => prevCourses.filter((course) => course._id !== id));
+        setCourses((prevCourses) =>
+          prevCourses.filter((course) => course._id !== id)
+        );
       } catch {
         setError("Failed to delete course. Please try again.");
       } finally {
@@ -150,7 +174,9 @@ const Courses = () => {
                   <FaTimes size={20} />
                 </button>
 
-                <h2 className="text-xl font-semibold mb-4">{isEditing ? "Edit Course" : "New Course"}</h2>
+                <h2 className="text-xl font-semibold mb-4">
+                  {isEditing ? "Edit Course" : "New Course"}
+                </h2>
                 <form onSubmit={handleSubmit}>
                   {/* Form Fields */}
                   {Object.keys(courseData).map((key) => (
@@ -202,7 +228,9 @@ const Courses = () => {
                       className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                       disabled={loading}
                     >
-                      {loading ? "Saving..." : `${isEditing ? "Update" : "Save"} Course`}
+                      {loading
+                        ? "Saving..."
+                        : `${isEditing ? "Update" : "Save"} Course`}
                     </button>
                   </div>
                 </form>
@@ -210,7 +238,9 @@ const Courses = () => {
             )}
 
             {error && (
-              <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>
+              <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
+                {error}
+              </div>
             )}
 
             <div className="overflow-x-auto">
@@ -220,10 +250,21 @@ const Courses = () => {
                 <table className="min-w-full bg-white shadow rounded-lg">
                   <thead>
                     <tr>
-                      {["Title", "Description", "Duration", "Level", "Objectives", "Price"].map((header) => (
-                        <th key={header} className="py-2 px-4 border-b">{header}</th>
+                      {[
+                        "Title",
+                        "Description",
+                        "Duration",
+                        "Level",
+                        "Objectives",
+                        "Price",
+                      ].map((header) => (
+                        <th key={header} className="py-2 px-4 border-b">
+                          {header}
+                        </th>
                       ))}
-                      {role === '"Admin"' && <th className="py-2 px-4 border-b">Actions</th>}
+                      {role === '"Admin"' && (
+                        <th className="py-2 px-4 border-b">Actions</th>
+                      )}
                       <th className="py-2 px-4 border-b">Enroll</th>
                     </tr>
                   </thead>
@@ -231,23 +272,38 @@ const Courses = () => {
                     {courses.map((course) => (
                       <tr key={course._id}>
                         <td className="py-2 px-4 border-b">{course.title}</td>
-                        <td className="py-2 px-4 border-b">{course.description}</td>
-                        <td className="py-2 px-4 border-b">{course.duration} week </td>
+                        <td className="py-2 px-4 border-b">
+                          {course.description}
+                        </td>
+                        <td className="py-2 px-4 border-b">
+                          {course.duration} week{" "}
+                        </td>
                         <td className="py-2 px-4 border-b">{course.levels}</td>
-                        <td className="py-2 px-4 border-b">{course.objectives}</td>
+                        <td className="py-2 px-4 border-b">
+                          {course.objectives}
+                        </td>
                         <td className="py-2 px-4 border-b">${course.price}</td>
-                        {role === '"Admin"' && (
+                        {role === "Admin" && (
                           <td className="py-2 px-4 border-b ">
-                            <button onClick={() => handleEditCourse(course)} className="text-blue-500">
+                            <button
+                              onClick={() => handleEditCourse(course)}
+                              className="text-blue-500"
+                            >
                               <FaEdit />
                             </button>
-                            <button onClick={() => handleDeleteCourse(course._id)} className="text-red-500">
+                            <button
+                              onClick={() => handleDeleteCourse(course._id)}
+                              className="text-red-500"
+                            >
                               <FaTrash />
                             </button>
                           </td>
                         )}
-                         <td className="py-2 px-4 border-b ">
-                          <button onClick={() => handleEnroll(course._id)} className="text-green-500">
+                        <td className="py-2 px-4 border-b ">
+                          <button
+                            onClick={() => handleEnroll(course._id)}
+                            className="text-green-500"
+                          >
                             <FaBookOpen />
                           </button>
                         </td>

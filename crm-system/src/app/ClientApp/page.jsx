@@ -1,13 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Navbar from "../Components/Navbar";
 import Sidebar from "../Components/Sidebar";
+import Button from "../Components/Button";
 import axios from "axios";
 
 const ClientApp = () => {
   const [notifications, setNotifications] = useState([]);
-  const [contactMessage, setContactMessage] = useState("");
-  const [advisorId, setAdvisorId] = useState("");
   const [advisors, setAdvisors] = useState([]);
   const [error, setError] = useState(null);
   
@@ -50,9 +48,11 @@ const ClientApp = () => {
     <div className="flex h-screen bg-gray-100">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-        <Navbar />
         <main className="p-4">
-          <h1 className="text-2xl font-semibold mb-4">Client App</h1>
+        <div className="flex items-center justify-between w-full md:w-auto mb-7 md:mb-0">
+            <h1 className="text-2xl font-semibold">Client App</h1>
+              <Button />
+          </div>
 
           {/* Notifications */}
           <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">

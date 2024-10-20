@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Navbar from "../Components/Navbar";
+import Button from "../Components/Button";
 import Sidebar from "../Components/Sidebar";
 import axios from "axios";
 import { FaPlus, FaTimes, FaEdit, FaTrash } from "react-icons/fa";
@@ -156,18 +156,20 @@ const Contacts = () => {
     <div className="flex h-screen bg-gray-100">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-        <Navbar />
         <main className="p-4">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-semibold">Contacts</h1>
-            <button
-              onClick={() => setShowForm(!showForm)}
-              className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        <div className="flex items-center justify-between w-full md:w-auto mb-4 md:mb-0">
+              <h1 className="text-2xl font-semibold">Contracts</h1>
+              <div className="flex flex-col md:flex-row justify-between space-x-4 items-center mb-4">
+              <Button />
+              <button
+              className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4 md:mt-0 transition duration-300"
+              onClick={() => setShowForm(true)}
             >
               <FaPlus className="mr-2" />
               Add Contact
             </button>
-          </div>
+              </div>
+           </div>
 
           {showForm && (
             <div className="bg-white p-6 shadow rounded-lg mb-4 relative">

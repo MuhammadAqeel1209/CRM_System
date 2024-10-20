@@ -7,7 +7,7 @@ import {
   FaUsers,
   FaDatabase,
   FaBook,
-  FaSpinner 
+  FaSpinner
 } from "react-icons/fa";
 import Image from "next/image";
 
@@ -22,7 +22,7 @@ const Sidebar = () => {
   }, []);
 
   return (
-    <aside className="w-64 bg-white text-gray-800 shadow-md h-full">
+    <aside className="w-64 bg-white text-gray-800 shadow-md h-screen overflow-y-auto">
       <div className="p-6 flex items-center space-x-4">
         <Image
           src={"/assets/img/logo.jpg"}
@@ -118,7 +118,6 @@ const Sidebar = () => {
                   </a>
                 </Link>
               </li>
-              
             </>
           )}
 

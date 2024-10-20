@@ -1,11 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Navbar from "../Components/Navbar";
+import Button from "../Components/Button";
 import Sidebar from "../Components/Sidebar";
 import axios from "axios";
 import bcrypt from "bcryptjs";
 import { FaPlus, FaTimes, FaEdit, FaTrash } from "react-icons/fa";
-import { CheckCircleIcon } from "@heroicons/react/solid";
 import { useRouter } from "next/navigation";
 
 const Users = () => {
@@ -16,8 +15,6 @@ const Users = () => {
   const [editUser, setEditUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [userId, setUserId] = useState(null);
-  const [courseId, setCourseId] = useState(null);
   const [newUser, setNewUser] = useState({
     role: "",
     firstName: "",
@@ -30,15 +27,13 @@ const Users = () => {
     location: "",
     teamId: "",
   });
-  const router = useRouter()
 
   useEffect(() => {
     // Retrieve user role from localStorage when the component mounts
     const role = localStorage.getItem("userRole");
-    const userId = localStorage.getItem("userId");
-    const trimmedUserId = userId ? userId.trim().replace(/^"|"$/g, "") : null;
-    setUserRole(role);
-    setUserId(trimmedUserId);
+    const parsedRole = JSON.parse(role);
+    console.log(parsedRole.value)
+    setUserRole(parsedRole.value);
   }, []);
 
   // Fetch users on component mount
@@ -60,27 +55,9 @@ const Users = () => {
     }
   };
 
-  const fetchCourseEnroll = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get("/api/enroll");
-      if (response.status == 200) {
-        setCourseId(response.data.data);
-      } else {
-        console.error("Unexpected API response structure:", response.data);
-        setError("Unexpected response from the server.");
-      }
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      setError("Failed to fetch users. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     fetchUsers();
-    fetchCourseEnroll();
   }, []);
 
   const handleInputChange = (e) => {
@@ -222,25 +199,23 @@ const Users = () => {
     setEditUser({ ...editUser, [name]: value });
   };
 
-  const checkProgress = () =>{
-    router.push("/Progress")
-  }
-
   return (
     <div className="flex h-screen bg-gray-100">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-        <Navbar />
         <main className="p-4">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center justify-between w-full md:w-auto mb-4 md:mb-0">
             <h1 className="text-2xl font-semibold">Users</h1>
-            <button
-              onClick={() => setShowForm(!showForm)}
-              className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
-            >
-              <FaPlus className="mr-2" />
-              Add User
-            </button>
+            <div className="flex flex-col md:flex-row justify-between space-x-4 items-center mb-4">
+              <Button />
+              <button
+                className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4 md:mt-0 transition duration-300"
+                onClick={() => setShowForm(!showForm)}
+              >
+                <FaPlus className="mr-2" />
+                Add Users{" "}
+              </button>
+            </div>
           </div>
 
           {showForm && (
@@ -548,11 +523,11 @@ const Users = () => {
                     users.length > 0 ? (
                       users
                         .filter((user) => {
-                          if (userRole === '"Admin"') {
+                          if (userRole === "Admin") {
                             return true; // Show all users for admin
-                          } else if (userRole === '"Advisor"') {
+                          } else if (userRole === "Advisor") {
                             return user.role === "Advisor"; // Show only advisor data
-                          } else if (userRole === '"Team Leader"') {
+                          } else if (userRole === "Team Leader") {
                             return (
                               user.role === "Advisor" ||
                               user.role === "Team Leader"

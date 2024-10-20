@@ -36,4 +36,3 @@ export async function GET(req) {
   }
 }
 
-// Optional: You can also handle other methods like POST, PUT, DELETE here

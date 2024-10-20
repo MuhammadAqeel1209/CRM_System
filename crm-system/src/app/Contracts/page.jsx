@@ -32,7 +32,7 @@ const Contracts = () => {
     "Project-Based Contracts",
     "Vendor/Supplier Contracts",
   ];
-  const statuses = ["Active", "Inactive", "Pending"];
+  const statuses = ["Active", "Inactive", "Pending","Completed"];
   const applicationStatuses = ["New", "In Review", "Approved", "Rejected"];
 
   useEffect(() => {
@@ -324,8 +324,8 @@ const Contracts = () => {
 
           {/* Add Contract Modal */}
           {showModal && (
-            <div className="fixed inset-0 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3">
+            <div className="flex pt-5 bg-gray-100 items-center justify-center">
+              <div className="bg-white p-8 shadow-lg rounded-lg w-full max-w-4xl mx-4">
                 <h2 className="text-lg font-semibold mb-4">Add Contract</h2>
                 <button
                   className="absolute top-2 right-2"

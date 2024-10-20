@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useLayoutEffect, useEffect, useState } from "react";
 import Button from "@/app/Components/Button";
 import Sidebar from "@/app/Components/Sidebar";
 import DashboardCard from "@/app/Components/DashboardCard";
@@ -7,8 +7,6 @@ import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { isAuthenticated } from "../Utils/Auth";
-import { useLayoutEffect } from "react";
-import { useEffect, useState } from "react";
 import {
   FaUsers,
   FaFileContract,
@@ -26,15 +24,16 @@ import {
 } from "react-icons/fa";
 
 const Dashborad = () => {
-  const [stats, setStats] = useState([]);
-  const [error, setError] = useState([]);
+  const [stats, setStats] = useState({});
+  const [error, setError] = useState("");
   const [partners, setPartners] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [courses, setCourses] = useState([]);
   const [data, setData] = useState([]);
   const [userRole, setUserRole] = useState();
+  const [monthlyClosures, setMonthlyClosures] = useState(0);
+  const [openLeads, setOpenLeads] = useState(0);
   const router = useRouter();
-
 
   useLayoutEffect(() => {
     if (!isAuthenticated()) {
@@ -54,10 +53,9 @@ const Dashborad = () => {
   }, []);
 
   useEffect(() => {
-    // Retrieve user role from localStorage when the component mounts
     const role = localStorage.getItem("userRole");
     const parsedRole = JSON.parse(role);
-    setUserRole(parsedRole.value); // Set the user role state
+    setUserRole(parsedRole.value);
   }, []);
 
   useEffect(() => {
@@ -65,21 +63,19 @@ const Dashborad = () => {
       try {
         const response = await axios.get("/api/partners");
         if (response.data.success && Array.isArray(response.data.data)) {
-          // Ensure each partner has a string _id
           const transformedPartners = response.data.data.map((partner) => ({
             ...partner,
             _id: partner._id.toString(),
           }));
           setPartners(transformedPartners);
         } else {
-          console.error("Unexpected API response structure:", response.data);
           setError("Unexpected response from the server.");
         }
       } catch (error) {
-        console.error("Error fetching partners:", error);
         setError("Failed to fetch partners. Please try again later.");
       }
     };
+
     const fetchTasks = async () => {
       try {
         const response = await axios.get("/api/tasks");
@@ -87,7 +83,7 @@ const Dashborad = () => {
           setTasks(response.data.data);
         }
       } catch {
-        console.log("Failed to fetch contracts. Please try again later.");
+        setError("Failed to fetch tasks. Please try again later.");
       }
     };
 
@@ -95,7 +91,7 @@ const Dashborad = () => {
       try {
         const response = await axios.get("/api/course");
         if (response.status === 200) {
-          setCourses(response.data.data || []);
+          setCourses(response.data.data );
         } else {
           throw new Error("Unexpected response from the server.");
         }
@@ -103,6 +99,7 @@ const Dashborad = () => {
         setError("Failed to fetch courses. Please try again later.");
       }
     };
+
     const fetchCollection = async () => {
       try {
         const response = await axios.get("/api/collections");
@@ -110,25 +107,84 @@ const Dashborad = () => {
           setData(response.data.data);
         }
       } catch {
-        console.log("Failed to fetch collection. Please try again later.");
+        setError("Failed to fetch collection. Please try again later.");
       }
     };
 
+    // Fetch KPI data
+    const fetchKPIData = async () => {
+
+        const collectionName = "contracts"; // The name of the collection
+        const fieldName = "applicationStatus"; // The field you want to filter by
+        const values = ["New","In Review", "Approved"] ; // Array of values to filter the documents
+        const startDate = new Date();
+        // startDate.setDate(1); // First day of the current month
+        // const endDate = new Date(); // Current date
+    
+        axios.get(`/api/kpiClourse`, {
+          params: {
+            collection: collectionName,
+            field: fieldName,
+            values, 
+          },
+        }).then((res) =>{
+          if (res.data.success) {
+            setMonthlyClosures(res.data.count)
+          }
+        }).catch((err)=>{
+          setError("Failed to fetch KPI data. Please try again later.");
+        })
+    
+    };
+    const fetchKPILead = async () => {
+
+      const collectionName = "contracts"; // The name of the collection
+      const fieldName = "status"; // The field you want to filter by
+      const values = "Inactive"; // Array of values to filter the documents
+      const startDate = new Date();
+      startDate.setDate(1); // First day of the current month
+      const endDate = new Date(); // Current date
+  
+      axios.get(`/api/kpiLeads`, {
+        params: {
+          collection: collectionName,
+          field: fieldName,
+          values,
+          startDate,
+          endDate 
+        },
+      }).then((res) =>{
+          setOpenLeads(res.data.count)
+      }).catch((err)=>{
+        setError("Failed to fetch KPI data. Please try again later.");
+      })
+  
+  };
+
+    fetchKPIData();
+    fetchKPILead();
     fetchCollection();
     fetchCourses();
     fetchTasks();
     fetchPartners();
   }, []);
 
+  const calculateKPIPercentage = (monthlyClosures, totalLeads) => {
+    if (totalLeads === 0) return 0; // To avoid division by zero
+    return (monthlyClosures / totalLeads) * 100;
+  };
+  
+  const kpiPercentage = calculateKPIPercentage(monthlyClosures, openLeads);
+  
+
   return (
     <div className="flex bg-gray-100">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-
         <main className="p-4">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-semibold">Dashboard Overview</h1>
-            <Button/>
+            <Button />
           </div>
 
           {/* Key Performance Indicators Section */}
@@ -160,18 +216,18 @@ const Dashborad = () => {
             />
             <DashboardCard
               title="KPI Score"
-              value="85%"
+              value={kpiPercentage}
               icon={<FaChartLine size={30} className="text-red-500" />}
             />
             {/* New Dashboard Cards for Leads and Monthly Closures */}
             <DashboardCard
-              title="Leads"
-              value={45}
+              title="Open Leads"
+              value={openLeads}
               icon={<FaClipboardList size={30} className="text-purple-500" />}
             />
             <DashboardCard
               title="Monthly Closures"
-              value={10}
+              value={monthlyClosures}
               icon={<FaChartLine size={30} className="text-orange-500" />}
             />
           </div>
@@ -229,10 +285,11 @@ const Dashborad = () => {
                 ))}
               </div>
               <p className="mt-2 text-sm text-gray-500">
-                <Link href={"/Task"}>Click on a tasks for more details.</Link>
+                <Link href={"/Task"}>Click on a task for more details.</Link>
               </p>
             </div>
           )}
+
           {/* E-Learning Section */}
           {userRole === "Admin" && (
             <div className="mt-8">
@@ -244,43 +301,14 @@ const Dashborad = () => {
                     title={
                       <span className="font-bold">Title: {course.title}</span>
                     }
-                    value={` Description:
-                        ${course.description.substring(0, 15)}
-                        ${course.description.length > 15 ? "..." : ""}`}
-                    icon={<FaBook size={30} className="text-blue-500" />}
+                    value={`Description: ${course.description}`}
+                    icon={<FaBookOpen size={30} className="text-yellow-500" />}
                   />
                 ))}
               </div>
               <p className="mt-2 text-sm text-gray-500">
-                <Link href={"/Courses"}>
+                <Link href={"/E-Learning"}>
                   Click on a course for more details.
-                </Link>
-              </p>
-            </div>
-          )}
-
-          {/* Data Collection Section */}
-          {userRole === "Admin" && (
-            <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-2">
-                Data Collection Section
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {data.map((dat) => (
-                  <DashboardCard
-                    key={dat._id}
-                    title={
-                      <span className="font-bold">Title: {dat.title}</span>
-                    }
-                    value={` Contact Phase:
-                        ${dat.contactPhase}`}
-                    icon={<FaDatabase size={30} className="text-blue-500" />}
-                  />
-                ))}
-              </div>
-              <p className="mt-2 text-sm text-gray-500">
-                <Link href={"/CollectionData"}>
-                  Click on a collectionData for more details.
                 </Link>
               </p>
             </div>

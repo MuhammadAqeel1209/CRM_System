@@ -138,12 +138,13 @@ const Dashborad = () => {
     };
     const fetchKPILead = async () => {
 
-      const collectionName = "contracts"; // The name of the collection
-      const fieldName = "status"; // The field you want to filter by
-      const values = "Inactive"; // Array of values to filter the documents
+      const collectionName = "contracts"; 
+      const fieldName = "status"; 
+      const values = "Inactive"; 
       const startDate = new Date();
-      startDate.setDate(1); // First day of the current month
-      const endDate = new Date(); // Current date
+      startDate.setDate(1);
+      const endDate = new Date(); 
+      endDate.setDate(30)
   
       axios.get(`/api/kpiLeads`, {
         params: {

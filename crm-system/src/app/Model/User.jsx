@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required : true,
+    required: true,
   },
   email: {
     type: String,
@@ -39,7 +39,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  profileImage: {
+    type: String,
+    required: true, 
+  },
 });
 
+// Export the User model
 const User = mongoose.models.Users || mongoose.model("Users", userSchema);
-module.exports = User;
+export default User;

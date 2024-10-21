@@ -32,7 +32,7 @@ const Contracts = () => {
     "Project-Based Contracts",
     "Vendor/Supplier Contracts",
   ];
-  const statuses = ["Active", "Inactive", "Pending","Completed"];
+  const statuses = ["Active", "Inactive", "Pending", "Completed"];
   const applicationStatuses = ["New", "In Review", "Approved", "Rejected"];
 
   useEffect(() => {
@@ -181,19 +181,19 @@ const Contracts = () => {
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <main className="p-4">
-            <div className="flex items-center justify-between w-full md:w-auto mb-4 md:mb-0">
-              <h1 className="text-2xl font-semibold">Contracts</h1>
-              <div className="flex flex-col md:flex-row justify-between space-x-4 items-center mb-4">
+          <div className="flex items-center justify-between w-full md:w-auto mb-4 md:mb-0">
+            <h1 className="text-2xl font-semibold">Contracts</h1>
+            <div className="flex flex-col md:flex-row justify-between space-x-4 items-center mb-4">
               <Button />
               <button
-              className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4 md:mt-0 transition duration-300"
-              onClick={() => setShowModal(true)}
-            >
-              <FaPlus className="mr-2" />
-              Add Contract
-            </button>
-              </div>
+                className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4 md:mt-0 transition duration-300"
+                onClick={() => setShowModal(true)}
+              >
+                <FaPlus className="mr-2" />
+                Add Contract
+              </button>
             </div>
+          </div>
 
           {error && (
             <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
@@ -207,119 +207,65 @@ const Contracts = () => {
             </div>
           )}
 
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white shadow rounded-lg">
-              <thead>
-                <tr>
-                  <th scope="col" className="py-2 px-4 border-b text-left">
-                    Policy Number
-                  </th>
-                  <th scope="col" className="py-2 px-4 border-b text-left">
-                    Company Name
-                  </th>
-                  <th scope="col" className="py-2 px-4 border-b text-left">
-                    Contract Type
-                  </th>
-                  <th scope="col" className="py-2 px-4 border-b text-left">
-                    Status
-                  </th>
-                  <th scope="col" className="py-2 px-4 border-b text-left">
-                    Application Status
-                  </th>
-                  <th scope="col" className="py-2 px-4 border-b text-left">
-                    Total Premium
-                  </th>
-                  <th scope="col" className="py-2 px-4 border-b text-left">
-                    Start Date
-                  </th>
-                  <th scope="col" className="py-2 px-4 border-b text-left">
-                    Expiry Date
-                  </th>
-                  <th scope="col" className="py-2 px-4 border-b text-left">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {contracts.length > 0 ? (
-                  contracts.map((contract) => (
-                    <tr
-                      key={contract._id}
-                      className="hover:bg-gray-100 cursor-pointer"
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {contracts.length > 0 ? (
+              contracts.map((contract) => (
+                <div
+                  key={contract._id}
+                  className="bg-white p-4 rounded-lg shadow-md border transition-transform transform hover:scale-105"
+                >
+                  <h2 className="text-lg font-semibold text-gray-700">
+                    Policy Number: {contract.policyNumber}
+                  </h2>
+                  <p className="text-gray-600">
+                    <strong>Company Name:</strong> {contract.companyName}
+                  </p>
+                  <p className="text-gray-600">
+                    <strong>Contract Type:</strong> {contract.contractType}
+                  </p>
+                  <p className="text-gray-600">
+                    <strong>Status:</strong> {contract.status}
+                  </p>
+                  <p className="text-gray-600">
+                    <strong>Application Status:</strong>{" "}
+                    {contract.applicationStatus}
+                  </p>
+                  <p className="text-gray-600">
+                    <strong>Total Premium:</strong>{" "}
+                    {contract.totalPremium.toLocaleString(undefined, {
+                      style: "currency",
+                      currency: "USD",
+                    })}
+                  </p>
+                  <p className="text-gray-600">
+                    <strong>Start Date:</strong>{" "}
+                    {new Date(contract.startDate).toLocaleDateString()}
+                  </p>
+                  <p className="text-gray-600">
+                    <strong>Expiry Date:</strong>{" "}
+                    {new Date(contract.expiryDate).toLocaleDateString()}
+                  </p>
+                  <div className="mt-4 flex justify-between">
+                    <button
+                      className="text-blue-500 hover:text-blue-700"
+                      onClick={() => handleEditContract(contract)}
                     >
-                      <td
-                        className="py-2 px-4 border-b"
-                        data-label="Policy Number"
-                      >
-                        {contract.policyNumber}
-                      </td>
-                      <td
-                        className="py-2 px-4 border-b"
-                        data-label="Company Name"
-                      >
-                        {contract.companyName}
-                      </td>
-                      <td
-                        className="py-2 px-4 border-b"
-                        data-label="Contract Type"
-                      >
-                        {contract.contractType}
-                      </td>
-                      <td className="py-2 px-4 border-b" data-label="Status">
-                        {contract.status}
-                      </td>
-                      <td
-                        className="py-2 px-4 border-b"
-                        data-label="Application Status"
-                      >
-                        {contract.applicationStatus}
-                      </td>
-                      <td
-                        className="py-2 px-4 border-b"
-                        data-label="Total Premium"
-                      >
-                        {contract.totalPremium.toLocaleString(undefined, {
-                          style: "currency",
-                          currency: "USD",
-                        })}
-                      </td>
-                      <td
-                        className="py-2 px-4 border-b"
-                        data-label="Start Date"
-                      >
-                        {new Date(contract.startDate).toLocaleDateString()}
-                      </td>
-                      <td
-                        className="py-2 px-4 border-b"
-                        data-label="Expiry Date"
-                      >
-                        {new Date(contract.expiryDate).toLocaleDateString()}
-                      </td>
-                      <td className="py-2 px-4 border-b" data-label="Actions">
-                        <button
-                          className="mr-2 text-blue-500 hover:text-blue-700"
-                          onClick={() => handleEditContract(contract)}
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          className="text-red-500 hover:text-red-700"
-                          onClick={() => handleDeleteContract(contract._id)}
-                        >
-                          <FaTrash />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="9" className="text-center py-4">
-                      No contracts available.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="text-red-500 hover:text-red-700"
+                      onClick={() => handleDeleteContract(contract._id)}
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full py-4 text-center text-gray-500">
+                No contracts available.
+              </div>
+            )}
           </div>
 
           {/* Add Contract Modal */}
@@ -475,11 +421,7 @@ const Contracts = () => {
                   <button
                     type="submit"
                     className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    disabled={
-                      loading ||
-                      !newContract.policyNumber ||
-                      !newContract.companyName
-                    }
+                    disabled={loading}
                   >
                     {loading ? "Adding..." : "Add Contract"}
                   </button>
@@ -489,9 +431,9 @@ const Contracts = () => {
           )}
 
           {/* Edit Contract Modal */}
-          {showEditModal && editContract && (
-            <div className="fixed inset-0 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3 transform transition-transform duration-300 ease-in-out translate-y-0">
+          {showEditModal && (
+            <div className="flex pt-5 bg-gray-100 items-center justify-center">
+              <div className="bg-white p-8 shadow-lg rounded-lg w-full max-w-4xl mx-4">
                 <h2 className="text-lg font-semibold mb-4">Edit Contract</h2>
                 <button
                   className="absolute top-2 right-2"
@@ -542,6 +484,7 @@ const Contracts = () => {
                       required
                       className="border rounded p-2 w-full"
                     >
+                      <option value="">Select Contract Type</option>
                       {contractTypes.map((type) => (
                         <option key={type} value={type}>
                           {type}
@@ -562,6 +505,7 @@ const Contracts = () => {
                       required
                       className="border rounded p-2 w-full"
                     >
+                      <option value="">Select Status</option>
                       {statuses.map((status) => (
                         <option key={status} value={status}>
                           {status}
@@ -582,6 +526,7 @@ const Contracts = () => {
                       required
                       className="border rounded p-2 w-full"
                     >
+                      <option value="">Select Application Status</option>
                       {applicationStatuses.map((appStatus) => (
                         <option key={appStatus} value={appStatus}>
                           {appStatus}
@@ -638,11 +583,7 @@ const Contracts = () => {
                   <button
                     type="submit"
                     className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    disabled={
-                      loading ||
-                      !editContract.policyNumber ||
-                      !editContract.companyName
-                    }
+                    disabled={loading}
                   >
                     {loading ? "Updating..." : "Update Contract"}
                   </button>

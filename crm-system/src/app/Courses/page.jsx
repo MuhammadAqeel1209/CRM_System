@@ -32,7 +32,6 @@ const Courses = () => {
   }, []);
 
   useEffect(() => {
-    // Retrieve user role from localStorage when the component mounts
     const id = localStorage.getItem("userId");
     const parsedId = JSON.parse(id);
     setUserId(parsedId.value);
@@ -128,6 +127,7 @@ const Courses = () => {
   const handleEditCourse = (course) => {
     setIsEditing(true);
     setCourseData(course);
+    setShowForm(true);
   };
 
   const handleEnroll = async (courseId) => {
@@ -160,7 +160,7 @@ const Courses = () => {
                     }}
                   >
                     <FaPlus className="mr-2" />
-                    Add Courses{" "}
+                    Add Courses
                   </button>
                 )}
               </div>
@@ -179,43 +179,74 @@ const Courses = () => {
                   {isEditing ? "Edit Course" : "New Course"}
                 </h2>
                 <form onSubmit={handleSubmit}>
-                  {/* Form Fields */}
-                  {Object.keys(courseData).map((key) => (
-                    <div key={key}>
-                      <label className="block mb-1 capitalize">{key}</label>
-                      {key === "description" || key === "objectives" ? (
-                        <textarea
-                          name={key}
-                          value={courseData[key]}
-                          onChange={handleInputChange}
-                          className="w-full border px-3 py-2 rounded"
-                          required
-                        />
-                      ) : key === "levels" ? (
-                        <select
-                          name={key}
-                          value={courseData[key]}
-                          onChange={handleInputChange}
-                          className="w-full border px-3 py-2 rounded"
-                          required
-                        >
-                          <option value="">Select level</option>
-                          <option value="Beginner">Beginner</option>
-                          <option value="Intermediate">Intermediate</option>
-                          <option value="Advanced">Advanced</option>
-                        </select>
-                      ) : (
-                        <input
-                          type={key === "price" ? "number" : "text"}
-                          name={key}
-                          value={courseData[key]}
-                          onChange={handleInputChange}
-                          className="w-full border px-3 py-2 rounded"
-                          required
-                        />
-                      )}
-                    </div>
-                  ))}
+                  <div>
+                    <label className="block mb-1">Title</label>
+                    <input
+                      type="text"
+                      name="title"
+                      value={courseData.title}
+                      onChange={handleInputChange}
+                      className="w-full border px-3 py-2 rounded"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1">Description</label>
+                    <textarea
+                      name="description"
+                      value={courseData.description}
+                      onChange={handleInputChange}
+                      className="w-full border px-3 py-2 rounded"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1">Duration</label>
+                    <input
+                      type="text"
+                      name="duration"
+                      value={courseData.duration}
+                      onChange={handleInputChange}
+                      className="w-full border px-3 py-2 rounded"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1">Level</label>
+                    <select
+                      name="levels"
+                      value={courseData.levels}
+                      onChange={handleInputChange}
+                      className="w-full border px-3 py-2 rounded"
+                      required
+                    >
+                      <option value="">Select level</option>
+                      <option value="Beginner">Beginner</option>
+                      <option value="Intermediate">Intermediate</option>
+                      <option value="Advanced">Advanced</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block mb-1">Objectives</label>
+                    <textarea
+                      name="objectives"
+                      value={courseData.objectives}
+                      onChange={handleInputChange}
+                      className="w-full border px-3 py-2 rounded"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1">Price</label>
+                    <input
+                      type="number"
+                      name="price"
+                      value={courseData.price}
+                      onChange={handleInputChange}
+                      className="w-full border px-3 py-2 rounded"
+                      required
+                    />
+                  </div>
                   <div className="flex justify-end">
                     <button
                       type="button"
@@ -237,87 +268,67 @@ const Courses = () => {
                 </form>
               </div>
             )}
-
-            {error && (
-              <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
-                {error}
-              </div>
-            )}
-
-            <div className="overflow-x-auto">
-              {loading ? (
-                <p>Loading courses...</p>
-              ) : (
-                <table className="min-w-full bg-white shadow rounded-lg">
-                  <thead>
-                    <tr>
-                      {[
-                        "Title",
-                        "Description",
-                        "Duration",
-                        "Level",
-                        "Objectives",
-                        "Price",
-                      ].map((header) => (
-                        <th key={header} className="py-2 px-4 border-b">
-                          {header}
-                        </th>
-                      ))}
-                      {role === '"Admin"' && (
-                        <th className="py-2 px-4 border-b">Actions</th>
-                      )}
-                      <th className="py-2 px-4 border-b">Enroll</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {courses.map((course) => (
-                      <tr key={course._id}>
-                        <td className="py-2 px-4 border-b">{course.title}</td>
-                        <td className="py-2 px-4 border-b">
-                          {course.description}
-                        </td>
-                        <td className="py-2 px-4 border-b">
-                          {course.duration} week{" "}
-                        </td>
-                        <td className="py-2 px-4 border-b">{course.levels}</td>
-                        <td className="py-2 px-4 border-b">
-                          {course.objectives}
-                        </td>
-                        <td className="py-2 px-4 border-b">${course.price}</td>
-                        {role === "Admin" && (
-                          <td className="py-2 px-4 border-b ">
-                            <button
-                              onClick={() => handleEditCourse(course)}
-                              className="text-blue-500"
-                            >
-                              <FaEdit />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteCourse(course._id)}
-                              className="text-red-500"
-                            >
-                              <FaTrash />
-                            </button>
-                          </td>
-                        )}
-                        <td className="py-2 px-4 border-b ">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {courses.length > 0 ? (
+                courses.map((course) => (
+                  <div
+                    key={course._id}
+                    className="bg-white p-4 rounded-lg shadow-md border transition-transform transform hover:scale-105"
+                  >
+                    <h2 className="text-lg font-semibold text-gray-700">
+                      Title: {course.title}
+                    </h2>
+                    <p className="text-gray-600">
+                      <strong> Description:</strong> {course.description}
+                    </p>
+                    <p className="text-gray-600">
+                      <strong>Objective:</strong> {course.objectives}
+                    </p>
+                    <p className="text-gray-600">
+                      <strong>Duration:</strong> {course.duration}
+                    </p>
+                    <p className="text-gray-600">
+                      <strong>Level:</strong> {course.level}
+                    </p>
+                    <p className="text-gray-600">
+                      <strong>Price:</strong> {course.price}
+                    </p>
+                    <div className="mt-4 flex justify-between">
+                      {role === "Admin" && (
+                        <>
                           <button
-                            onClick={() => handleEnroll(course._id)}
-                            className="text-green-500"
+                            onClick={() => handleEditCourse(course)}
+                            className="text-blue-500"
                           >
-                            <FaBookOpen />
+                            <FaEdit />
                           </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                          <button
+                            className="text-red-500 hover:text-red-700"
+                            onClick={() => handleDeleteCourse(course._id)}
+                          >
+                            <FaTrash />
+                          </button>
+                        </>
+                      )}
+                      <button
+                        onClick={() => handleEnroll(course._id)}
+                        className="text-green-500"
+                      >
+                        <FaBookOpen />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full py-4 text-center text-gray-500">
+                  No courses available.
+                </div>
               )}
             </div>
-            <ToastContainer />
           </main>
         </div>
       </div>
+      <ToastContainer />
     </>
   );
 };

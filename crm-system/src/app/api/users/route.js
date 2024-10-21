@@ -1,6 +1,8 @@
 import connectDatabase from "@/app/libs/mongodb";
 import Users from "@/app/Model/User";
+import bcrypt from "bcryptjs";
 
+// POST Request to create a new user
 export const POST = async (request) => {
   try {
     await connectDatabase();
@@ -15,19 +17,21 @@ export const POST = async (request) => {
       dateOfBirth,
       position,
       location,
+      profileImage, // Added profile image handling
     } = await request.json();
 
     // Validate required fields
     if (
-      (!role,
+      !role ||
       !firstName ||
-        !lastName ||
-        !password ||
-        !phoneNumber ||
-        !email ||
-        !dateOfBirth ||
-        !position ||
-        !location)
+      !lastName ||
+      !password ||
+      !phoneNumber ||
+      !email ||
+      !dateOfBirth ||
+      !position ||
+      !location ||
+      !profileImage
     ) {
       return new Response(
         JSON.stringify({
@@ -42,24 +46,45 @@ export const POST = async (request) => {
       );
     }
 
-    const newUsers = await Users.create({
+    // Check if the user already exists
+    const existingUser = await Users.findOne({ email });
+    if (existingUser) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          status: 409,
+          error: "User with this email already exists",
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+          status: 409,
+        }
+      );
+    }
+
+    // Hash the password before saving to the database
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user
+    const newUser = await Users.create({
       role,
       firstName,
       lastName,
       phoneNumber,
-      password,
+      password: hashedPassword, // Storing hashed password
       email,
       dateOfBirth,
       position,
       location,
+      profileImage,
     });
 
     return new Response(
       JSON.stringify({
         success: true,
         status: 201,
-        message: "Users registered successfully",
-        data: newUsers,
+        message: "User registered successfully",
+        data: newUser,
       }),
       {
         headers: { "Content-Type": "application/json" },
@@ -83,10 +108,12 @@ export const POST = async (request) => {
   }
 };
 
+// GET Request to fetch all users
 export const GET = async (request) => {
   try {
     await connectDatabase();
     const data = await Users.find();
+
     return new Response(
       JSON.stringify({
         success: true,

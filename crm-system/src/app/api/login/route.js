@@ -4,6 +4,7 @@ import Users from "@/app/Model/User";
 
 export async function POST(req) {
   const { email, password } = await req.json();
+  console.log(email,password)
 
   try {
     await db();
@@ -19,6 +20,7 @@ export async function POST(req) {
 
     // Compare the provided password with the hashed password in the database
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    // console.log()
 
     if (!isPasswordValid) {
       return new Response(

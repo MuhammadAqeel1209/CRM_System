@@ -1,20 +1,17 @@
 import connectDatabase from "@/app/libs/mongodb";
 import mongoose from "mongoose";
 
-export async function GET(req) {
+export async function POST(req) {
   // Connect to MongoDB
   await connectDatabase();
 
   try {
     const { connection } = mongoose;
 
-    // Parse the URL for query parameters
-    const url = new URL(req.url);
-    const collectionName = url.searchParams.get("collection");
-    const fieldName = url.searchParams.get("field");
-    const values = url.searchParams.getAll("values"); // Get the values as an array
-
-    console.log("Values received:", values);
+    const data = await req.json();
+    const collectionName = data.collection;
+    const fieldName = data.field;
+    const values = data.values; // Get the values as an array
 
     // Check for required parameters
     if (!collectionName || !fieldName || values.length === 0) {
@@ -37,13 +34,7 @@ export async function GET(req) {
       .db.collection(collectionName)
       .find(query)
       .toArray(); // Convert the cursor to an array
-
-    // Process each document (moving to the next row/document)
-    for (const document of matchingDocuments) {
-      console.log("Processing document:", document);
-      // You can add your custom processing logic here for each document.
-    }
-
+      
     // Respond with the total number of matching documents
     return new Response(JSON.stringify({ count: matchingDocuments.length }), {
       status: 200,

@@ -35,11 +35,11 @@ const Dashborad = () => {
   const [openLeads, setOpenLeads] = useState(0);
   const router = useRouter();
 
-  useLayoutEffect(() => {
-    if (!isAuthenticated()) {
-      router.push("/");
-    }
-  }, [router]);
+  // useLayoutEffect(() => {
+  //   if (!isAuthenticated()) {
+  //     router.push("/");
+  //   }
+  // }, [router]);
 
   useEffect(() => {
     axios
@@ -111,31 +111,29 @@ const Dashborad = () => {
       }
     };
 
-    // Fetch KPI data
     const fetchKPIData = async () => {
 
-        const collectionName = "contracts"; // The name of the collection
-        const fieldName = "applicationStatus"; // The field you want to filter by
-        const values = ["New","In Review", "Approved"] ; // Array of values to filter the documents
-        const startDate = new Date();
-        // startDate.setDate(1); // First day of the current month
-        // const endDate = new Date(); // Current date
-    
-        axios.get(`/api/kpiClourse`, {
-          params: {
-            collection: collectionName,
-            field: fieldName,
-            values, 
-          },
-        }).then((res) =>{
-          if (res.data.success) {
-            setMonthlyClosures(res.data.count)
-          }
-        }).catch((err)=>{
-          setError("Failed to fetch KPI data. Please try again later.");
-        })
-    
-    };
+      const collectionName = "contracts"; // The name of the collection
+      const fieldName = "applicationStatus"; // The field you want to filter by
+      const values = ["New","In Review", "Approved"] ; // Array of values to filter the documents
+      const startDate = new Date();
+      // startDate.setDate(1); // First day of the current month
+      // const endDate = new Date(); // Current date
+  
+      axios.post(`/api/kpiClourse`, {
+                    collection: collectionName,
+          field: fieldName,
+          values, 
+        
+      }).then((res) =>{
+        if (res.data.count) {
+          setMonthlyClosures(res.data.count)
+        }
+      }).catch((err)=>{
+        setError("Failed to fetch KPI data. Please try again later.");
+      })
+  
+  };
     const fetchKPILead = async () => {
 
       const collectionName = "contracts"; 
@@ -217,7 +215,7 @@ const Dashborad = () => {
             />
             <DashboardCard
               title="KPI Score"
-              value={kpiPercentage}
+              value={`${kpiPercentage} %`}
               icon={<FaChartLine size={30} className="text-red-500" />}
             />
             {/* New Dashboard Cards for Leads and Monthly Closures */}

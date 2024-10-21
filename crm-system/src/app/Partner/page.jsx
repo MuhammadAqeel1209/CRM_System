@@ -21,7 +21,15 @@ const Partners = () => {
   const [error, setError] = useState("");
   const [editPartner, setEditPartner] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [role, setRole] = useState([]);
   const [loading, setLoading] = useState(false); // For loading state during update
+
+  useEffect(() => {
+    // Retrieve user role from localStorage when the component mounts
+    const role = localStorage.getItem("userRole");
+    const parsedRole = JSON.parse(role);
+    setRole(parsedRole.value); // Set the user role state
+  }, []);
 
   // Fetch contacts and partners on component mount
   useEffect(() => {
@@ -353,45 +361,32 @@ const Partners = () => {
             </div>
           )}
 
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white shadow rounded-lg">
-              <thead>
-                <tr>
-                  <th className="py-2 px-4 border-b">Name</th>
-                  <th className="py-2 px-4 border-b">Additional Information</th>
-                  <th className="py-2 px-4 border-b">Product Brand</th>
-                  <th className="py-2 px-4 border-b">Phone Number</th>
-                  <th className="py-2 px-4 border-b">Email</th>
-                  <th className="py-2 px-4 border-b">Main Contact</th>
-                  <th className="py-2 px-4 border-b">Website</th>
-                  <th className="py-2 px-4 border-b">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {partners.map((partner) => (
-                  <tr
-                    key={partner._id.toString()} // Ensure _id is a unique string
-                    className="hover:bg-gray-100 cursor-pointer"
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {partners.length > 0 ? (
+                partners.map((partner) => (
+                  <div
+                    key={partner._id}
+                    className="bg-white p-4 rounded-lg shadow-md border transition-transform transform hover:scale-105"
                   >
-                    <td className="py-2 px-4 border-b">{partner.name}</td>
-                    <td className="py-2 px-4 border-b">
-                      {partner.additionalInfo}
-                    </td>
-                    <td className="py-2 px-4 border-b">
-                      {partner.productBrandName}
-                    </td>
-                    <td className="py-2 px-4 border-b">
-                      {partner.phoneNumber}
-                    </td>
-                    <td className="py-2 px-4 border-b">{partner.email}</td>
-                    <td className="py-2 px-4 border-b">
-                      {contacts.find(
+                    <h2 className="text-lg font-semibold text-gray-700">
+                      Name: {partner.name}
+                    </h2>
+                    <p className="text-gray-600">
+                      <strong> Product Brand:</strong> {partner.productBrandName}
+                    </p>
+                    <p className="text-gray-600">
+                      <strong>Phone Number:</strong> {partner.phoneNumber}
+                    </p>
+                    <p className="text-gray-600">
+                      <strong>Email :</strong> {partner.email}
+                    </p>
+                    <p className="text-gray-600">
+                      <strong>Main Contact:</strong>  {contacts.find(
                         (contact) => contact._id === partner.mainContactPersonId
                       )?.name || "N/A"}
-                    </td>
-                    <td className="py-2 px-4 border-b">
-                      {partner.website ? (
-                        <a
+                    </p>
+                    <p className="text-gray-600">
+                      <strong>Website:</strong><a
                           href={partner.website}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -399,14 +394,13 @@ const Partners = () => {
                         >
                           {partner.website}
                         </a>
-                      ) : (
-                        "N/A"
-                      )}
-                    </td>
-                    <td className="py-2 px-4 border-b" data-label="Actions">
+                    </p>
+                  <div className="mt-4 flex justify-between">
+                      {role === "Admin" && ( 
+                        <>
                       <button
-                        className="mr-2 text-blue-500 hover:text-blue-700"
-                        onClick={() => handleEditPartner(partner)}
+                         onClick={() => handleEditPartner(partner)}
+                        className="text-blue-500"
                       >
                         <FaEdit />
                       </button>
@@ -416,12 +410,18 @@ const Partners = () => {
                       >
                         <FaTrash />
                       </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                      </>
+                      )}
+                     
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full py-4 text-center text-gray-500">
+                  No courses available.
+                </div>
+              )}
+            </div>
 
           {/* Edit Partner Modal */}
           {showEditModal && editPartner && (

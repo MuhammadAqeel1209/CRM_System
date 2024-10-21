@@ -5,7 +5,6 @@ import Sidebar from "../Components/Sidebar";
 import axios from "axios";
 import bcrypt from "bcryptjs";
 import { FaPlus, FaTimes, FaEdit, FaTrash } from "react-icons/fa";
-import { useRouter } from "next/navigation";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -20,19 +19,19 @@ const Users = () => {
     firstName: "",
     lastName: "",
     phoneNumber: "",
-    password: "",
     email: "",
+    password: "",
     dateOfBirth: "",
     position: "",
     location: "",
-    teamId: "",
+    profileImage: null, // Store the image file here
   });
 
   useEffect(() => {
     // Retrieve user role from localStorage when the component mounts
     const role = localStorage.getItem("userRole");
     const parsedRole = JSON.parse(role);
-    console.log(parsedRole.value)
+    console.log(parsedRole.value);
     setUserRole(parsedRole.value);
   }, []);
 
@@ -55,7 +54,6 @@ const Users = () => {
     }
   };
 
-
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -63,6 +61,25 @@ const Users = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewUser({ ...newUser, [name]: value });
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    const imageUrl = URL.createObjectURL(file);
+    if (imageUrl) {
+      setNewUser({ ...newUser, profileImage: imageUrl });
+    }
+  };
+
+  const handleEditImageChange = (e) => {
+    const file = e.target.files[0]; // Get the first file from the input
+    const imageUrl = URL.createObjectURL(file);
+    if (imageUrl) {
+      setEditUser({
+        ...editUser,
+        profileImage: imageUrl, // Update the profileImage field with the file
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -340,6 +357,19 @@ const Users = () => {
                       required
                     />
                   </div>
+                  {/* Image Upload */}
+                  <div>
+                    <label className="block mb-1 font-medium">
+                      Profile Image
+                    </label>
+                    <input
+                      type="file"
+                      name="profileImage"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
                 </div>
                 <button
                   type="submit"
@@ -353,7 +383,6 @@ const Users = () => {
               </form>
             </div>
           )}
-
           {isEditing && editUser && (
             <div className="bg-white p-6 shadow rounded-lg mb-4 relative">
               <h2 className="text-xl font-semibold mb-4">Edit User</h2>
@@ -465,6 +494,19 @@ const Users = () => {
                       required
                     />
                   </div>
+                  {/* Image Upload */}
+                  <div>
+                    <label className="block mb-1 font-medium">
+                      Profile Image
+                    </label>
+                    <input
+                      type="file"
+                      name="profileImage"
+                      accept="image/*"
+                      onChange={handleEditImageChange} // New handler for image file input
+                      className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
                 </div>
                 <button
                   type="submit"
@@ -503,104 +545,86 @@ const Users = () => {
               </svg>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white border border-gray-200">
-                <thead>
-                  <tr>
-                    <th className="py-2 border-b">Role</th>
-                    <th className="py-2 border-b">First Name</th>
-                    <th className="py-2 border-b">Last Name</th>
-                    <th className="py-2 border-b">Phone Number</th>
-                    <th className="py-2 border-b">Email</th>
-                    <th className="py-2 border-b">Date of Birth</th>
-                    <th className="py-2 border-b">Position</th>
-                    <th className="py-2 border-b">Location</th>
-                    <th className="py-2 border-b">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {userRole ? (
-                    users.length > 0 ? (
-                      users
-                        .filter((user) => {
-                          if (userRole === "Admin") {
-                            return true; // Show all users for admin
-                          } else if (userRole === "Advisor") {
-                            return user.role === "Advisor"; // Show only advisor data
-                          } else if (userRole === "Team Leader") {
-                            return (
-                              user.role === "Advisor" ||
-                              user.role === "Team Leader"
-                            ); // Show both advisor and user roles
-                          }
-                          return false;
-                        })
-                        .map((user) => (
-                          <tr key={user._id} className="hover:bg-gray-50">
-                            <td className="py-2 border-b text-center">
-                              {user.role}
-                            </td>
-                            <td className="py-2 border-b text-center">
-                              {user.firstName}
-                            </td>
-                            <td className="py-2 border-b text-center">
-                              {user.lastName}
-                            </td>
-                            <td className="py-2 border-b text-center">
-                              {user.phoneNumber}
-                            </td>
-                            <td className="py-2 border-b text-center">
-                              {user.email}
-                            </td>
-                            <td className="py-2 border-b text-center">
-                              {new Date(user.dateOfBirth).toLocaleDateString()}
-                            </td>
-                            <td className="py-2 border-b text-center">
-                              {user.position}
-                            </td>
-                            <td className="py-2 border-b text-center">
-                              {user.location}
-                            </td>
-                            <td className="py-2 border-b text-center space-x-2">
-                              <button
-                                onClick={() => handleEditUser(user)}
-                                className="text-blue-500 hover:text-blue-700 transition duration-200"
-                                aria-label="Edit user"
-                              >
-                                <FaEdit />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteUser(user._id)}
-                                className="text-red-500 hover:text-red-700 transition duration-200"
-                                aria-label="Delete user"
-                              >
-                                <FaTrash />
-                              </button>
-                            </td>
-                          </tr>
-                        ))
-                    ) : (
-                      <tr>
-                        <td
-                          colSpan="9"
-                          className="py-4 text-center text-gray-500"
-                        >
-                          No users found.
-                        </td>
-                      </tr>
-                    )
-                  ) : (
-                    <tr>
-                      <td
-                        colSpan="9"
-                        className="py-4 text-center text-gray-500"
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {userRole ? (
+                users.length > 0 ? (
+                  users
+                    .filter((user) => {
+                      if (userRole === "Admin") {
+                        return true; // Show all users for admin
+                      } else if (userRole === "Advisor") {
+                        return user.role === "Advisor"; // Show only advisor data
+                      } else if (userRole === "Team Leader") {
+                        return (
+                          user.role === "Advisor" || user.role === "Team Leader"
+                        ); // Show both advisor and team leader
+                      }
+                      return false;
+                    })
+                    .map((user) => (
+                      <div
+                        key={user._id}
+                        className="bg-white p-4 rounded-lg shadow-md border"
                       >
-                        No users found.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                        <div className="flex flex-col items-center space-y-4">
+                          {/* Avatar or Placeholder */}
+                          <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                            {/* Placeholder for user's avatar */}
+                              <img
+                                src={user.profileImage}
+                                alt={`${user.firstName} ${user.lastName}`}
+                                className="w-full h-full object-cover rounded-full"
+                              />
+                              <span className="text-gray-400">No Image</span>
+                          </div>
+                          <h2 className="text-xl font-semibold text-gray-700">
+                            {user.firstName} {user.lastName}
+                          </h2>
+                          <p className="text-black text-md">
+                            <span className="font-medium">Phone:</span>{" "}
+                            {user.phoneNumber}
+                          </p>
+                          <p className="text-black text-md">
+                            <span className="font-medium">Email:</span>{" "}
+                            {user.email}
+                          </p>
+                          <p className="text-black text-md">
+                            <span className="font-medium">Date of Birth:</span>{" "}
+                            {new Date(user.dateOfBirth).toLocaleDateString()}
+                          </p>
+                          <p className="text-black text-md">
+                            <span className="font-medium">Position:</span>{" "}
+                            {user.position}
+                          </p>
+                        </div>
+                        <div className="mt-4 flex justify-center space-x-4">
+                          <button
+                            onClick={() => handleEditUser(user)}
+                            className="text-blue-500 hover:text-blue-700 transition duration-200"
+                            aria-label="Edit user"
+                          >
+                            <FaEdit />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUser(user._id)}
+                            className="text-red-500 hover:text-red-700 transition duration-200"
+                            aria-label="Delete user"
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                ) : (
+                  <div className="col-span-full py-4 text-center text-gray-500">
+                    No users found.
+                  </div>
+                )
+              ) : (
+                <div className="col-span-full py-4 text-center text-gray-500">
+                  No users found.
+                </div>
+              )}
             </div>
           )}
         </main>

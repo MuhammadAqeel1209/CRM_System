@@ -517,70 +517,58 @@ const TaskManagement = () => {
             </div>
           )}
 
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white shadow rounded-lg">
-              <thead>
-                <tr>
-                  <th className="py-2 px-4 border-b">Task Title</th>
-                  <th className="py-2 px-4 border-b">Status</th>
-                  <th className="py-2 px-4 border-b">Linked To</th>
-                  <th className="py-2 px-4 border-b">Assigned To</th>
-                  <th className="py-2 px-4 border-b">Priority</th>
-                  <th className="py-2 px-4 border-b">Due Date</th>
-                  <th className="py-2 px-4 border-b">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.isArray(tasks) &&
-                  tasks.map((task) => (
-                    <tr
-                      key={task.id || task._id}
-                      className="cursor-pointer hover:bg-gray-100"
-                    >
-                      <td className="py-2 px-4 border-b">{task.title}</td>
-                      <td className="py-2 px-4 border-b">{task.status}</td>
-                      {/* Linked To Display */}
-                      <td className="py-2 px-4 border-b">
-                        {task.linkedType
-                          ? `${
-                              task.linkedType.charAt(0).toUpperCase() +
-                              task.linkedType.slice(1)
-                            }: ${task.linkedToName || task.linkedTo}`
-                          : task.linkedTo}
-                      </td>
-                      {/* Assigned To Display */}
-                      <td className="py-2 px-4 border-b">
-                        {task.assignedType
-                          ? `${
-                              task.assignedType.charAt(0).toUpperCase() +
-                              task.assignedType.slice(1)
-                            }: ${task.assignedToName || task.assignedTo}`
-                          : task.assignedTo}
-                      </td>
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-x-auto">
+  {Array.isArray(tasks) && tasks.length > 0 ? (
+    tasks.map((task) => (
+      <div
+        key={task.id || task._id}
+        className="bg-white shadow rounded-lg p-4 hover:shadow-lg transition duration-200 cursor-pointer"
+      >
+        <h3 className="text-lg font-semibold">{task.title}</h3>
+        <p className="text-gray-600">Status: {task.status}</p>
+        {/* Linked To Display */}
+        <p className="text-gray-600">
+          {task.linkedType
+            ? `${task.linkedType.charAt(0).toUpperCase() + task.linkedType.slice(1)}: ${task.linkedToName || task.linkedTo}`
+            : task.linkedTo}
+        </p>
+        {/* Assigned To Display */}
+        <p className="text-gray-600">
+          {task.assignedType
+            ? `${task.assignedType.charAt(0).toUpperCase() + task.assignedType.slice(1)}: ${task.assignedToName || task.assignedTo}`
+            : task.assignedTo}
+        </p>
+        <p className="text-gray-600">Priority: {task.priority}</p>
+        <p className="text-gray-600">Due Date: {new Date(task.dueDate).toLocaleDateString("en-US")}</p>
+        <div className="mt-4">
+          <button
+            className="mr-2 text-blue-500 hover:text-blue-700"
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row click
+              handleUpdateStart(task);
+            }}
+          >
+            <FaEdit />
+          </button>
+          <button
+            className="text-red-500 hover:text-red-700"
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row click
+              handleDeleteTask(task._id);
+            }}
+          >
+            <FaTrash />
+          </button>
+        </div>
+      </div>
+    ))
+  ) : (
+    <div className="col-span-full py-4 text-center text-gray-500">
+      No tasks found.
+    </div>
+  )}
+</div>
 
-                      <td className="py-2 px-4 border-b">{task.priority}</td>
-                      <td className="py-2 px-4 border-b">
-                        {new Date(task.dueDate).toLocaleDateString("en-US")}
-                      </td>
-                      <td className="py-2 px-4 border-b" data-label="Actions">
-                        <button
-                          className="mr-2 text-blue-500 hover:text-blue-700"
-                          onClick={() => handleUpdateStart(task)}
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          className="text-red-500 hover:text-red-700"
-                          onClick={() => handleDeleteTask(task._id)}
-                        >
-                          <FaTrash />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
 
           {selectedTask && (
             <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">

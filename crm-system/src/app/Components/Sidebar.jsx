@@ -74,7 +74,7 @@ const Sidebar = () => {
                 <Link href="/Partner" legacyBehavior>
                   <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
                     <FaFileAlt className="mr-3" />
-                    Partner Overview
+                    Partner OverView
                   </a>
                 </Link>
               </li>

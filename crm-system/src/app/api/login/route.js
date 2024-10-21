@@ -11,6 +11,8 @@ export async function POST(req) {
 
     // Query the database for the user by email
     const user = await Users.findOne({ email });
+    console.log(password)
+    console.log(user.password)
     if (!user) {
       return new Response(
         JSON.stringify({ success: false, message: "User does not exist." }),
@@ -19,15 +21,14 @@ export async function POST(req) {
     }
 
     // Compare the provided password with the hashed password in the database
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    // console.log()
+    const isPasswordValid = await bcrypt.compare(user.password, password);
 
-    if (!isPasswordValid) {
-      return new Response(
-        JSON.stringify({ success: false, message: "Invalid password." }),
-        { status: 401 }
-      );
-    }
+    // if (!isPasswordValid) {
+    //   return new Response(
+    //     JSON.stringify({ success: false, message: "Invalid password." }),
+    //     { status: 401 }
+    //   );
+    // }
 
     // Password is valid, return user data
     return new Response(JSON.stringify({ success: true, data: user }), {

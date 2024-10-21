@@ -26,7 +26,6 @@ function getItemWithExpiry(key) {
     localStorage.removeItem(key);
     return null;
   }
-  console.log(item.value);
   return item.value;
 }
 
@@ -51,6 +50,7 @@ export default function Page() {
 
     try {
       const response = await axios.post(`/api/login`, { email, password });
+      console.log(response.status)
 
       if (response.data.success) {
         const user = response.data.data;
@@ -62,7 +62,6 @@ export default function Page() {
       }
     } catch (error) {
       setError(error.response?.data?.message || "An error occurred while logging in. Please try again.");
-      console.error("Error logging in:", error);
     }
   };
 

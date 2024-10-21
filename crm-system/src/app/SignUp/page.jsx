@@ -32,10 +32,11 @@ const SignUp = () => {
 
     try {
       const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(newUser.password, saltRounds);
+      console.log(newUser.password)
+      newUser.password = await bcrypt.hash(newUser.password, saltRounds);
+      console.log(newUser.password)
       const userWithHashedPassword = {
-        ...newUser,
-        password: hashedPassword,
+        ...newUser
       };
 
       const response = await axios.post("/api/users", userWithHashedPassword);

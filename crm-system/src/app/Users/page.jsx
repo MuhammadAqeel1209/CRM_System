@@ -575,7 +575,6 @@ const Users = () => {
                                 alt={`${user.firstName} ${user.lastName}`}
                                 className="w-full h-full object-cover rounded-full"
                               />
-                              <span className="text-gray-400">No Image</span>
                           </div>
                           <h2 className="text-xl font-semibold text-gray-700">
                             {user.firstName} {user.lastName}

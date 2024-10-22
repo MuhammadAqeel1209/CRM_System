@@ -18,7 +18,7 @@ const Sidebar = () => {
     // Retrieve user role from localStorage when the component mounts
     const role = localStorage.getItem("userRole");
     const parsedRole = JSON.parse(role);
-    setUserRole(parsedRole.value); // Set the user role state
+    setUserRole(parsedRole?.value); // Set the user role state
   }, []);
 
   return (

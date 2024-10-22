@@ -16,19 +16,20 @@ const Courses = () => {
     description: "",
     duration: "",
     levels: "",
-    objectives: "",
+    objectives: [],
+    material: [],
     price: "",
   });
+  console.log(courseData, "courseData");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [role, setRole] = useState([]);
   const [userId, setUserId] = useState();
 
   useEffect(() => {
-    // Retrieve user role from localStorage when the component mounts
     const role = localStorage.getItem("userRole");
     const parsedRole = JSON.parse(role);
-    setRole(parsedRole.value); // Set the user role state
+    setRole(parsedRole.value);
   }, []);
 
   useEffect(() => {
@@ -43,7 +44,7 @@ const Courses = () => {
       try {
         const response = await axios.get("/api/course");
         if (response.status === 200) {
-          setCourses(response.data.data || []);
+          setCourses(response.data.data);
         } else {
           throw new Error("Unexpected response from the server.");
         }
@@ -102,6 +103,7 @@ const Courses = () => {
       duration: "",
       levels: "",
       objectives: "",
+      material: "",
       price: "",
     });
     setShowForm(false);
@@ -139,6 +141,39 @@ const Courses = () => {
     } catch {
       toast.error("Failed to enroll. Please try again.");
     }
+  };
+
+  const handleMaterialChange = (index, value) => {
+    const newMaterial = [...courseData.material];
+    newMaterial[index] = value;
+    setCourseData({ ...courseData, material: newMaterial });
+  };
+
+  const handleAddMaterial = () => {
+    setCourseData({ ...courseData, material: [...courseData.material, ""] });
+  };
+
+  const handleRemoveMaterial = (index) => {
+    const newMaterial = courseData.material.filter((_, i) => i !== index);
+    setCourseData({ ...courseData, material: newMaterial });
+  };
+
+  const handleObjectiveChange = (index, value) => {
+    const newObjective = [...courseData.objectives];
+    newObjective[index] = value;
+    setCourseData({ ...courseData, objectives: newObjective });
+  };
+
+  const handleAddObjective = () => {
+    setCourseData({
+      ...courseData,
+      objectives: [...courseData.objectives, ""],
+    });
+  };
+
+  const handleRemoveObjective = (index) => {
+    const newObjective = courseData.objectives.filter((_, i) => i !== index);
+    setCourseData({ ...courseData, objectives: newObjective });
   };
 
   return (
@@ -227,15 +262,71 @@ const Courses = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block mb-1">Objectives</label>
-                    <textarea
-                      name="objectives"
-                      value={courseData.objectives}
-                      onChange={handleInputChange}
-                      className="w-full border px-3 py-2 rounded"
-                      required
-                    />
+                    <label className="block mb-1">Material Links</label>
+                    {courseData.material.length > 0 &&
+                      courseData?.material?.map((link, index) => (
+                        <div key={index} className="flex items-center mb-2">
+                          <input
+                            type="text"
+                            value={link}
+                            onChange={(e) =>
+                              handleMaterialChange(index, e.target.value)
+                            }
+                            className="w-full border px-3 py-2 rounded mr-2"
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveMaterial(index)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <FaTimes />
+                          </button>
+                        </div>
+                      ))}
+                    <button
+                      type="button"
+                      onClick={handleAddMaterial}
+                      className="flex items-center text-blue-500 hover:text-blue-700 mt-2"
+                    >
+                      <FaPlus className="mr-1" />
+                      Add Material Link
+                    </button>
                   </div>
+
+                  <div>
+                    <label className="block mb-1">Objective</label>
+                    {courseData.objectives.length > 0 &&
+                      courseData.objectives.map((text, index) => (
+                        <div key={index} className="flex items-center mb-2">
+                          <input
+                            type="text"
+                            value={text}
+                            onChange={(e) =>
+                              handleObjectiveChange(index, e.target.value)
+                            }
+                            className="w-full border px-3 py-2 rounded mr-2"
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveObjective(index)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <FaTimes />
+                          </button>
+                        </div>
+                      ))}
+                    <button
+                      type="button"
+                      onClick={handleAddObjective}
+                      className="flex items-center text-blue-500 hover:text-blue-700 mt-2"
+                    >
+                      <FaPlus className="mr-1" />
+                      Add Objective
+                    </button>
+                  </div>
+
                   <div>
                     <label className="block mb-1">Price</label>
                     <input
@@ -273,62 +364,87 @@ const Courses = () => {
                 courses.map((course) => (
                   <div
                     key={course._id}
-                    className="bg-white p-4 rounded-lg shadow-md border transition-transform transform hover:scale-105"
+                    className="bg-white shadow rounded-lg p-4 relative"
                   >
-                    <h2 className="text-lg font-semibold text-gray-700">
-                      Title: {course.title}
+                    <button
+                      onClick={() => handleDeleteCourse(course._id)}
+                      className="absolute top-4 right-4 text-red-500 hover:text-red-700"
+                      aria-label="Delete course"
+                    >
+                      <FaTrash size={20} />
+                    </button>
+                    <button
+                      onClick={() => handleEditCourse(course)}
+                      className="absolute top-4 right-12 text-blue-500 hover:text-blue-700"
+                      aria-label="Edit course"
+                    >
+                      <FaEdit size={20} />
+                    </button>
+                    <h2 className="text-lg font-semibold mb-2">
+                      {course.title}
                     </h2>
-                    <p className="text-gray-600">
-                      <strong> Description:</strong> {course.description}
+                    <p className="mb-2">{course.description}</p>
+                    <p className="mb-2">
+                      <strong>Duration:</strong> {course.duration} Week
                     </p>
-                    <p className="text-gray-600">
-                      <strong>Objective:</strong> {course.objectives}
+                    <p className="mb-2">
+                      <strong>Level:</strong> {course.levels}
                     </p>
-                    <p className="text-gray-600">
-                      <strong>Duration:</strong> {course.duration}
-                    </p>
-                    <p className="text-gray-600">
-                      <strong>Level:</strong> {course.level}
-                    </p>
-                    <p className="text-gray-600">
-                      <strong>Price:</strong> {course.price}
-                    </p>
-                    <div className="mt-4 flex justify-between">
-                      {role === "Admin" && (
+                    <p className="mb-2">
+                      {course.objectives.map((item, index) => (
                         <>
-                          <button
-                            onClick={() => handleEditCourse(course)}
-                            className="text-blue-500"
+                          <strong>Objective {index + 1}:</strong>
+                          <span
+                            key={index}
+                            href={course.objectives}
+                            className="text-blue-500 underline"
                           >
-                            <FaEdit />
-                          </button>
-                          <button
-                            className="text-red-500 hover:text-red-700"
-                            onClick={() => handleDeleteCourse(course._id)}
-                          >
-                            <FaTrash />
-                          </button>
+                            {item}
+                          </span>
+                          <br />
                         </>
-                      )}
-                      <button
-                        onClick={() => handleEnroll(course._id)}
-                        className="text-green-500"
-                      >
-                        <FaBookOpen />
-                      </button>
-                    </div>
+                      ))}
+                    </p>
+                    <p className="mb-2">
+                      {course.material.map((item, index) => (
+                        <>
+                          <strong>Material {index + 1}:</strong>
+                          <a
+                            key={index}
+                            href={course.material}
+                            target="_blank"
+                            className="text-blue-500 underline"
+                          >
+                            {item}
+                          </a>
+                          <br />
+                        </>
+                      ))}
+                    </p>
+                    <p className="mb-2">
+                      <strong>Price:</strong> ${course.price}
+                    </p>
+                    <button
+                      onClick={() => handleEnroll(course._id)}
+                      className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+                    >
+                      Enroll
+                    </button>
                   </div>
                 ))
               ) : (
-                <div className="col-span-full py-4 text-center text-gray-500">
-                  No courses available.
-                </div>
+                <p>No courses available.</p>
               )}
             </div>
+            <ToastContainer />
+            {error && (
+              <div className="mt-4 text-red-500">
+                <p>{error}</p>
+              </div>
+            )}
           </main>
         </div>
       </div>
-      <ToastContainer />
     </>
   );
 };

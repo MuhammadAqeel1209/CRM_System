@@ -5,7 +5,7 @@ export const POST = async (request) => {
   try {
     await connectDatabase();
 
-    const { title, description, objectives, duration, levels, price } =
+    const { title, description, objectives,material, duration, levels, price } =
       await request.json();
 
     // Validate required fields
@@ -14,6 +14,7 @@ export const POST = async (request) => {
       !description ||
       !objectives ||
       !duration ||
+      !material||
       !levels ||
       !price
     ) {
@@ -36,6 +37,7 @@ export const POST = async (request) => {
         duration,
         levels,
         objectives,
+        material,
         price,
     });
 

@@ -14,13 +14,10 @@ import {
   FaHandshake,
   FaChartLine,
   FaCalendar,
-  FaPhone,
   FaClipboardList,
-  FaTrophy,
   FaBriefcase,
   FaBookOpen,
-  FaDatabase,
-  FaBook,
+
 } from "react-icons/fa";
 
 const Dashborad = () => {
@@ -35,11 +32,11 @@ const Dashborad = () => {
   const [openLeads, setOpenLeads] = useState(0);
   const router = useRouter();
 
-  // useLayoutEffect(() => {
-  //   if (!isAuthenticated()) {
-  //     router.push("/");
-  //   }
-  // }, [router]);
+  useLayoutEffect(() => {
+    if (!isAuthenticated()) {
+      router.push("/");
+    }
+  }, [router]);
 
   useEffect(() => {
     axios
@@ -91,7 +88,7 @@ const Dashborad = () => {
       try {
         const response = await axios.get("/api/course");
         if (response.status === 200) {
-          setCourses(response.data.data );
+          setCourses(response.data.data);
         } else {
           throw new Error("Unexpected response from the server.");
         }
@@ -100,69 +97,55 @@ const Dashborad = () => {
       }
     };
 
-    const fetchCollection = async () => {
-      try {
-        const response = await axios.get("/api/collections");
-        if (response.data.success && Array.isArray(response.data.data)) {
-          setData(response.data.data);
-        }
-      } catch {
-        setError("Failed to fetch collection. Please try again later.");
-      }
-    };
-
     const fetchKPIData = async () => {
-
       const collectionName = "contracts"; // The name of the collection
       const fieldName = "applicationStatus"; // The field you want to filter by
-      const values = ["New","In Review", "Approved"] ; // Array of values to filter the documents
-      const startDate = new Date();
-      // startDate.setDate(1); // First day of the current month
-      // const endDate = new Date(); // Current date
-  
-      axios.post(`/api/kpiClourse`, {
-                    collection: collectionName,
-          field: fieldName,
-          values, 
-        
-      }).then((res) =>{
-        if (res.data.count) {
-          setMonthlyClosures(res.data.count)
-        }
-      }).catch((err)=>{
-        setError("Failed to fetch KPI data. Please try again later.");
-      })
-  
-  };
-    const fetchKPILead = async () => {
+      const values = ["New", "In Review", "Approved"]; // Array of values to filter the documents
 
-      const collectionName = "contracts"; 
-      const fieldName = "status"; 
-      const values = "Inactive"; 
-      const startDate = new Date();
-      startDate.setDate(1);
-      const endDate = new Date(); 
-      endDate.setDate(30)
-  
-      axios.get(`/api/kpiLeads`, {
-        params: {
+      axios
+        .post(`/api/kpiClourse`, {
           collection: collectionName,
           field: fieldName,
           values,
-          startDate,
-          endDate 
-        },
-      }).then((res) =>{
-          setOpenLeads(res.data.count)
-      }).catch((err)=>{
-        setError("Failed to fetch KPI data. Please try again later.");
-      })
-  
-  };
+        })
+        .then((res) => {
+          if (res.data.count) {
+            setMonthlyClosures(res.data.count);
+          }
+        })
+        .catch((err) => {
+          setError("Failed to fetch KPI data. Please try again later.");
+        });
+    };
+    const fetchKPILead = async () => {
+      const collectionName = "contracts";
+      const fieldName = "status";
+      const values = "Inactive";
+      const startDate = new Date();
+      startDate.setDate(1);
+      const endDate = new Date();
+      endDate.setDate(30);
+
+      axios
+        .get(`/api/kpiLeads`, {
+          params: {
+            collection: collectionName,
+            field: fieldName,
+            values,
+            startDate,
+            endDate,
+          },
+        })
+        .then((res) => {
+          setOpenLeads(res.data.count);
+        })
+        .catch((err) => {
+          setError("Failed to fetch KPI data. Please try again later.");
+        });
+    };
 
     fetchKPIData();
     fetchKPILead();
-    fetchCollection();
     fetchCourses();
     fetchTasks();
     fetchPartners();
@@ -172,9 +155,8 @@ const Dashborad = () => {
     if (totalLeads === 0) return 0; // To avoid division by zero
     return (monthlyClosures / totalLeads) * 100;
   };
-  
+
   const kpiPercentage = calculateKPIPercentage(monthlyClosures, openLeads);
-  
 
   return (
     <div className="flex bg-gray-100">

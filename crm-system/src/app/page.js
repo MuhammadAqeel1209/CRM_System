@@ -1,9 +1,9 @@
 'use client';
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
+import { useSignIn, useUser } from '@clerk/nextjs';
 
-// Set and get with expiration helper functions
+// Helper functions for setting and getting items with expiration
 function setItemWithExpiry(key, value, expiryInMinutes) {
   const now = new Date();
   const item = {
@@ -34,38 +34,44 @@ export default function Page() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const router = useRouter();
+  
+  // Clerk hooks
+  const { isLoaded, signIn } = useSignIn(); // Destructure isLoaded and signIn
+  const { user } = useUser();  // Use Clerk's user hook to get user data
 
-  // Check if the user is already logged in with valid expiry
+  // Check if the user is already logged in
   useEffect(() => {
+    if (!isLoaded) return; // Wait for signIn to be fully loaded
+
     const userRole = getItemWithExpiry('userRole');
-    if (userRole) {
+    if (signIn?.isSignedIn && userRole) {
       router.push("/Dashboard");
     }
-  }, [router]);
+  }, [signIn, router, isLoaded]);
 
   // Handle login action
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(null); 
+    setError(null);
 
     try {
-      const response = await axios.post(`/api/login`, { email, password });
-      console.log(response.status)
+      // Sign in the user
+      const signInAttempt = await signIn.create({
+        identifier: email,
+        password,
+      });
 
-      if (response.data.success) {
-        const user = response.data.data;
-        setItemWithExpiry('userRole', user.role, 60); // Expire in 60 minutes
-        setItemWithExpiry('userId', user._id, 60);   // Expire in 60 minutes
+      if (signInAttempt.status === "complete") {
+        const userRole = user?.role
+        setItemWithExpiry('userRole', userRole, 60); // Expire in 60 minutes
         router.push("/Dashboard");
-      } else {
-        setError(response.data.message || "Invalid email or password.");
       }
     } catch (error) {
-      setError(error.response?.data?.message || "An error occurred while logging in. Please try again.");
+      setError(error.message || "An error occurred while logging in. Please try again.");
     }
   };
 
-  // Handle sign up redirection
+  // Handle sign-up redirection
   const handleSignUp = () => {
     router.push("/SignUp"); // Navigate to the sign-up page
   };

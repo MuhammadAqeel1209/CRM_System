@@ -359,27 +359,32 @@ const Courses = () => {
                 </form>
               </div>
             )}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 space-x-10">
               {courses.length > 0 ? (
                 courses.map((course) => (
                   <div
                     key={course._id}
-                    className="bg-white shadow rounded-lg p-4 relative"
+                    className="bg-white shadow rounded-lg p-4 relative w-full md:w-[65%] lg:w-[90%] flex flex-col space-y-2"
                   >
-                    <button
-                      onClick={() => handleDeleteCourse(course._id)}
-                      className="absolute top-4 right-4 text-red-500 hover:text-red-700"
-                      aria-label="Delete course"
-                    >
-                      <FaTrash size={20} />
-                    </button>
-                    <button
-                      onClick={() => handleEditCourse(course)}
-                      className="absolute top-4 right-12 text-blue-500 hover:text-blue-700"
-                      aria-label="Edit course"
-                    >
-                      <FaEdit size={20} />
-                    </button>
+                    {role === "Admin" && (
+                      <div className="flex flex-col md:flex-row justify-between space-x-4 items-center mb-4">
+                        {" "}
+                        <button
+                          onClick={() => handleDeleteCourse(course._id)}
+                          className="absolute top-4 right-4 text-red-500 hover:text-red-700"
+                          aria-label="Delete course"
+                        >
+                          <FaTrash size={20} />
+                        </button>
+                        <button
+                          onClick={() => handleEditCourse(course)}
+                          className="absolute top-4 right-12 text-blue-500 hover:text-blue-700"
+                          aria-label="Edit course"
+                        >
+                          <FaEdit size={20} />
+                        </button>
+                      </div>
+                    )}
                     <h2 className="text-lg font-semibold mb-2">
                       {course.title}
                     </h2>
@@ -391,13 +396,13 @@ const Courses = () => {
                       <strong>Level:</strong> {course.levels}
                     </p>
                     <p className="mb-2">
+                    <strong> Objectives </strong>
                       {course.objectives.map((item, index) => (
                         <>
-                          <strong>Objective {index + 1}:</strong>
                           <span
                             key={index}
                             href={course.objectives}
-                            className="text-blue-500 underline"
+                            className="text-blue-500 font-bold"
                           >
                             {item}
                           </span>
@@ -406,14 +411,14 @@ const Courses = () => {
                       ))}
                     </p>
                     <p className="mb-2">
+                    <strong> Materials </strong>
                       {course.material.map((item, index) => (
                         <>
-                          <strong>Material {index + 1}:</strong>
                           <a
                             key={index}
                             href={course.material}
                             target="_blank"
-                            className="text-blue-500 underline"
+                            className="text-blue-500 underline font-bold"
                           >
                             {item}
                           </a>

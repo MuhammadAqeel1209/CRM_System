@@ -10,6 +10,7 @@ const Page = () => {
   const [userRole, setUserRole] = useState("");
   const [userId, setUserId] = useState(null);
   const [users, setUsers] = useState([]);
+  const [progress, setProgress] = useState({});
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
@@ -69,8 +70,26 @@ const Page = () => {
 
     return {
       courseTitle: courseDetails ? courseDetails.title : "N/A",
-      courseObjectives: courseDetails ? courseDetails.objectives : "N/A",
+      courseMaterail: courseDetails ? courseDetails.material : "N/A",
     };
+  };
+
+  // New function to handle reading progress
+  const startReading = async (linkId) => {
+    const readTime = 10; // Total read time in minutes
+    const userProgress = progress[linkId] || 0;
+
+    if (userProgress < readTime) {
+      // Increment progress
+      const updatedProgress = { ...progress, [linkId]: userProgress + 1 };
+      setProgress(updatedProgress);
+
+      try {
+        await axios.post("/api/progessReport", { userId, linkId, time: 1 });
+      } catch (error) {
+        console.error("Error updating progress:", error);
+      }
+    }
   };
 
   return (
@@ -94,7 +113,9 @@ const Page = () => {
                     "Phone Number",
                     "Email",
                     "Course Title",
-                    "Course Objectives",
+                    "Course Materials",
+                    "Progress",
+                    "Action",
                   ].map((heading) => (
                     <th
                       key={heading}
@@ -115,8 +136,11 @@ const Page = () => {
                       return isUserEnrolled; // Show only enrolled users
                     })
                     .map((user) => {
-                      const { courseTitle, courseObjectives } =
+                      const { courseTitle, courseMaterail } =
                         getUserCourseDetails(user);
+                      const enrolledCourse = enrolledCourses.find(
+                        (course) => course.userId === user._id
+                      );
 
                       // Conditional rendering based on user role
                       const isAuthorizedUser =
@@ -144,7 +168,32 @@ const Page = () => {
                               {courseTitle}
                             </td>
                             <td className="py-2 px-4 border-b text-center">
-                              {courseObjectives}
+                              {courseMaterail.map((item, index) => (
+                                <>
+                                  <a
+                                    key={index}
+                                    href={item}
+                                    target="_blank"
+                                    className="text-blue-500 underline font-bold"
+                                  >
+                                    {item}
+                                  </a>
+                                  <br />
+                                </>
+                              ))}
+                            </td>
+                            <td className="py-2 px-4 border-b text-center">
+                              {progress[enrolledCourse.courseId] || 0} / 10
+                            </td>
+                            <td className="py-2 px-4 border-b text-center">
+                              <button
+                                onClick={() =>
+                                  startReading(enrolledCourse.courseId)
+                                }
+                                className="bg-blue-500 text-white px-2 py-1 rounded"
+                              >
+                                Start Reading
+                              </button>
                             </td>
                           </tr>
                         )
@@ -152,7 +201,7 @@ const Page = () => {
                     })
                 ) : (
                   <tr>
-                    <td colSpan="6" className="py-4 text-center text-gray-500">
+                    <td colSpan="8" className="py-4 text-center text-gray-500">
                       No users found.
                     </td>
                   </tr>

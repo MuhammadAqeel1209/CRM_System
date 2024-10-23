@@ -159,6 +159,14 @@ const Sidebar = () => {
                   </a>
                 </Link>
               </li>
+              <li>
+                <Link href="/Progress" legacyBehavior>
+                  <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
+                    <FaSpinner className="mr-3" />
+                    Courses Progress
+                  </a>
+                </Link>
+              </li>
             </>
           )}
 
@@ -201,6 +209,14 @@ const Sidebar = () => {
                   <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
                     <FaBook className="mr-3" />
                     Courses
+                  </a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/Progress" legacyBehavior>
+                  <a className="flex items-center py-2 px-6 text-gray-800 hover:bg-gray-200 rounded transition duration-200 font-semibold">
+                    <FaSpinner className="mr-3" />
+                    Courses Progress
                   </a>
                 </Link>
               </li>

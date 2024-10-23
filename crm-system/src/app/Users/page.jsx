@@ -31,7 +31,6 @@ const Users = () => {
     // Retrieve user role from localStorage when the component mounts
     const role = localStorage.getItem("userRole");
     const parsedRole = JSON.parse(role);
-    console.log(parsedRole.value);
     setUserRole(parsedRole.value);
   }, []);
 
@@ -63,24 +62,69 @@ const Users = () => {
     setNewUser({ ...newUser, [name]: value });
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
-    const imageUrl = URL.createObjectURL(file);
-    if (imageUrl) {
-      setNewUser({ ...newUser, profileImage: imageUrl });
+  
+    if (!file) {
+      // Handle the case where no file was selected
+      console.error("No file selected");
+      return;
     }
-  };
-
-  const handleEditImageChange = (e) => {
-    const file = e.target.files[0]; // Get the first file from the input
-    const imageUrl = URL.createObjectURL(file);
-    if (imageUrl) {
-      setEditUser({
-        ...editUser,
-        profileImage: imageUrl, // Update the profileImage field with the file
+  
+    const formData = new FormData();
+    formData.append("image", file); // 'image' is the key used to upload
+  
+    try {
+      const response = await axios.post("/api/uploadImage", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Important for file uploads
+        },
       });
+  
+      // Assuming the API responds with the image URL in response.data
+      const imageUrl = response.data.imageUrl; // Adjust based on your API response
+  
+      if (imageUrl) {
+        setNewUser({ ...newUser, profileImage: imageUrl });
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      // Optionally, handle the error (e.g., show a message to the user)
     }
   };
+  
+
+  const handleEditImageChange = async (e) => {
+    const file = e.target.files[0];
+  
+    if (!file) {
+      // Handle the case where no file was selected
+      console.error("No file selected");
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append("image", file); // 'image' is the key used to upload
+  
+    try {
+      const response = await axios.post("/api/uploadImage", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Important for file uploads
+        },
+      });
+  
+      // Assuming the API responds with the image URL in response.data
+      const imageUrl = response.data.imageUrl; // Adjust based on your API response
+  
+      if (imageUrl) {
+        setNewUser({ ...editUser, profileImage: imageUrl });
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      // Optionally, handle the error (e.g., show a message to the user)
+    }
+  };
+    
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -88,7 +132,7 @@ const Users = () => {
     setError(null); // Reset error state
 
     try {
-
+console.log(newUser)
       const user = {
         ...newUser,
       };
@@ -568,6 +612,8 @@ const Users = () => {
                               <Image
                                 src={user.profileImage}
                                 alt={`${user.firstName} ${user.lastName}`}
+                                width={80}
+                                height={60}
                                 className="w-full h-full object-cover rounded-full"
                               />
                           </div>

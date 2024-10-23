@@ -40,7 +40,8 @@ export default function Page() {
     if (userRole) {
       router.push("/Dashboard");
     }
-  }, []);
+  }, [router]); 
+  
 
   // Handle login action
   const handleLogin = async (e) => {

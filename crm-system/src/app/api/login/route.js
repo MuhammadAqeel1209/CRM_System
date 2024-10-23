@@ -5,7 +5,6 @@ import Users from "@/app/Model/User";
 
 export async function POST(req) {
   const { email, password } = await req.json();
-  console.log(email,password)
 
   try {
     await db();

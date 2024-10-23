@@ -1,7 +1,7 @@
 import connectDatabase from "@/app/libs/mongodb";
 import mongoose from "mongoose";
 
-export async function GET(req) {
+export async function POST(req) {
   // Connect to MongoDB
   await connectDatabase();
 
@@ -9,12 +9,12 @@ export async function GET(req) {
     const { connection } = mongoose;
 
     // Parse the URL for query parameters
-    const url = new URL(req.url);
-    const collectionName = url.searchParams.get("collection"); 
-    const fieldName = url.searchParams.get("field"); 
-    const values = url.searchParams.get("values"); 
-    const startDate = new Date(url.searchParams.get("startDate"));
-    const endDate = new Date(url.searchParams.get("endDate"));
+    const data = await req.json();
+    const collectionName = data.collection;
+    const fieldName = data.field;
+    const values = data.values; // Get the values as an array
+    const startDate = new Date(data.startDate);
+    const endDate = new Date(data.endDate);
 
 
     // Check for required parameters

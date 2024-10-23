@@ -4,6 +4,7 @@ import Button from "../Components/Button";
 import Sidebar from "../Components/Sidebar";
 import axios from "axios";
 import { FaPlus, FaTimes, FaEdit, FaTrash } from "react-icons/fa";
+import Image from "next/image";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -564,7 +565,7 @@ const Users = () => {
                           {/* Avatar or Placeholder */}
                           <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
                             {/* Placeholder for user's avatar */}
-                              <img
+                              <Image
                                 src={user.profileImage}
                                 alt={`${user.firstName} ${user.lastName}`}
                                 className="w-full h-full object-cover rounded-full"

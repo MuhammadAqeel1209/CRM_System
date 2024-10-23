@@ -7,7 +7,7 @@ import {
   FaUsers,
   FaDatabase,
   FaBook,
-  FaSpinner
+  FaSpinner,
 } from "react-icons/fa";
 import Image from "next/image";
 
@@ -24,12 +24,8 @@ const Sidebar = () => {
   return (
     <aside className="w-64 bg-white text-gray-800 shadow-md h-screen overflow-y-auto">
       <div className="p-6 flex items-center space-x-4">
-        <Image
-          src={"/assets/img/logo.jpg"}
-          width={100}
-          height={100}
-          alt="Logo"
-        />
+        <Image src="/assets/img/logo.jpg" alt="logo" width={70} height={70} />
+
         <h2 className="text-2xl font-extrabold tracking-wide">
           Viawin Project CRM
         </h2>

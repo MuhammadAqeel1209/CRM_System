@@ -127,15 +127,13 @@ const Dashborad = () => {
       endDate.setDate(30);
 
       axios
-        .get(`/api/kpiLeads`, {
-          params: {
+        .post(`/api/kpiLeads`, {
             collection: collectionName,
             field: fieldName,
             values,
             startDate,
             endDate,
-          },
-        })
+          },)
         .then((res) => {
           setOpenLeads(res.data.count);
         })

@@ -20,7 +20,6 @@ const Courses = () => {
     material: [],
     price: "",
   });
-  console.log(courseData, "courseData");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [role, setRole] = useState([]);
@@ -102,8 +101,8 @@ const Courses = () => {
       description: "",
       duration: "",
       levels: "",
-      objectives: "",
-      material: "",
+      objectives: [],
+      material: [],
       price: "",
     });
     setShowForm(false);
@@ -178,17 +177,17 @@ const Courses = () => {
 
   return (
     <>
-      <div className="flex h-screen bg-gray-100">
+      <div className="flex flex-col md:flex-row h-screen bg-gray-100">
         <Sidebar />
         <div className="flex-1 flex flex-col">
           <main className="p-4">
-            <div className="flex items-center justify-between w-full md:w-auto mb-4 md:mb-0">
+            <div className="flex items-center justify-between w-full mb-4">
               <h1 className="text-2xl font-semibold">Courses</h1>
-              <div className="flex flex-col md:flex-row justify-between space-x-4 items-center mb-4">
+              <div className="flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 md:space-x-4 items-center">
                 <Button />
                 {role === "Admin" && (
                   <button
-                    className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4 md:mt-0 transition duration-300"
+                    className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
                     onClick={() => {
                       resetForm();
                       setShowForm(true);
@@ -200,8 +199,9 @@ const Courses = () => {
                 )}
               </div>
             </div>
+
             {showForm && (
-              <div className="bg-white p-6 shadow rounded-lg mb-4 relative">
+              <div className="bg-white p-6 shadow rounded-lg mb-4 relative w-full lg:w-1/2">
                 <button
                   onClick={resetForm}
                   className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
@@ -209,247 +209,200 @@ const Courses = () => {
                 >
                   <FaTimes size={20} />
                 </button>
-
                 <h2 className="text-xl font-semibold mb-4">
                   {isEditing ? "Edit Course" : "New Course"}
                 </h2>
+                {error && <p className="text-red-500 mb-4">{error}</p>}
                 <form onSubmit={handleSubmit}>
-                  <div>
-                    <label className="block mb-1">Title</label>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">
+                      Course Title
+                    </label>
                     <input
                       type="text"
                       name="title"
                       value={courseData.title}
                       onChange={handleInputChange}
-                      className="w-full border px-3 py-2 rounded"
                       required
+                      className="w-full border border-gray-300 rounded p-2"
                     />
                   </div>
-                  <div>
-                    <label className="block mb-1">Description</label>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">
+                      Description
+                    </label>
                     <textarea
                       name="description"
                       value={courseData.description}
                       onChange={handleInputChange}
-                      className="w-full border px-3 py-2 rounded"
                       required
+                      className="w-full border border-gray-300 rounded p-2"
+                      rows={4}
                     />
                   </div>
-                  <div>
-                    <label className="block mb-1">Duration</label>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">
+                      Duration (in weeks)
+                    </label>
                     <input
-                      type="text"
+                      type="number"
                       name="duration"
                       value={courseData.duration}
                       onChange={handleInputChange}
-                      className="w-full border px-3 py-2 rounded"
                       required
+                      className="w-full border border-gray-300 rounded p-2"
                     />
                   </div>
-                  <div>
-                    <label className="block mb-1">Level</label>
-                    <select
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">
+                      Levels
+                    </label>
+                    <input
+                      type="text"
                       name="levels"
                       value={courseData.levels}
                       onChange={handleInputChange}
-                      className="w-full border px-3 py-2 rounded"
                       required
-                    >
-                      <option value="">Select level</option>
-                      <option value="Beginner">Beginner</option>
-                      <option value="Intermediate">Intermediate</option>
-                      <option value="Advanced">Advanced</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block mb-1">Material Links</label>
-                    {courseData.material.length > 0 &&
-                      courseData?.material?.map((link, index) => (
-                        <div key={index} className="flex items-center mb-2">
-                          <input
-                            type="text"
-                            value={link}
-                            onChange={(e) =>
-                              handleMaterialChange(index, e.target.value)
-                            }
-                            className="w-full border px-3 py-2 rounded mr-2"
-                            required
-                          />
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveMaterial(index)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <FaTimes />
-                          </button>
-                        </div>
-                      ))}
-                    <button
-                      type="button"
-                      onClick={handleAddMaterial}
-                      className="flex items-center text-blue-500 hover:text-blue-700 mt-2"
-                    >
-                      <FaPlus className="mr-1" />
-                      Add Material Link
-                    </button>
+                      className="w-full border border-gray-300 rounded p-2"
+                    />
                   </div>
 
-                  <div>
-                    <label className="block mb-1">Objective</label>
-                    {courseData.objectives.length > 0 &&
-                      courseData.objectives.map((text, index) => (
-                        <div key={index} className="flex items-center mb-2">
-                          <input
-                            type="text"
-                            value={text}
-                            onChange={(e) =>
-                              handleObjectiveChange(index, e.target.value)
-                            }
-                            className="w-full border px-3 py-2 rounded mr-2"
-                            required
-                          />
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveObjective(index)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <FaTimes />
-                          </button>
-                        </div>
-                      ))}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">
+                      Objectives
+                    </label>
+                    {courseData.objectives.map((objective, index) => (
+                      <div key={index} className="flex items-center mb-2">
+                        <input
+                          type="text"
+                          value={objective}
+                          onChange={(e) => handleObjectiveChange(index, e.target.value)}
+                          className="border border-gray-300 rounded p-2 w-full"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveObjective(index)}
+                          className="ml-2 text-red-500"
+                          aria-label="Remove objective"
+                        >
+                          <FaTimes />
+                        </button>
+                      </div>
+                    ))}
                     <button
                       type="button"
                       onClick={handleAddObjective}
-                      className="flex items-center text-blue-500 hover:text-blue-700 mt-2"
+                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
                     >
-                      <FaPlus className="mr-1" />
                       Add Objective
                     </button>
                   </div>
 
-                  <div>
-                    <label className="block mb-1">Price</label>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">
+                      Materials
+                    </label>
+                    {courseData.material.map((mat, index) => (
+                      <div key={index} className="flex items-center mb-2">
+                        <input
+                          type="text"
+                          value={mat}
+                          onChange={(e) => handleMaterialChange(index, e.target.value)}
+                          className="border border-gray-300 rounded p-2 w-full"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveMaterial(index)}
+                          className="ml-2 text-red-500"
+                          aria-label="Remove material"
+                        >
+                          <FaTimes />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={handleAddMaterial}
+                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+                    >
+                      Add Material
+                    </button>
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">
+                      Price
+                    </label>
                     <input
                       type="number"
                       name="price"
                       value={courseData.price}
                       onChange={handleInputChange}
-                      className="w-full border px-3 py-2 rounded"
                       required
+                      className="w-full border border-gray-300 rounded p-2"
                     />
                   </div>
-                  <div className="flex justify-end">
-                    <button
-                      type="button"
-                      onClick={resetForm}
-                      className="mr-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                      disabled={loading}
-                    >
-                      {loading
-                        ? "Saving..."
-                        : `${isEditing ? "Update" : "Save"} Course`}
-                    </button>
-                  </div>
+
+                  <button
+                    type="submit"
+                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
+                    disabled={loading}
+                  >
+                    {loading ? "Saving..." : isEditing ? "Update Course" : "Add Course"}
+                  </button>
                 </form>
               </div>
             )}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 space-x-10">
-              {courses.length > 0 ? (
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {loading ? (
+                <p>Loading courses...</p>
+              ) : courses.length > 0 ? (
                 courses.map((course) => (
                   <div
                     key={course._id}
-                    className="bg-white shadow rounded-lg p-4 relative w-full md:w-[65%] lg:w-[90%] flex flex-col space-y-2"
+                    className="bg-white p-4 shadow rounded-lg"
                   >
-                    {role === "Admin" && (
-                      <div className="flex flex-col md:flex-row justify-between space-x-4 items-center mb-4">
-                        {" "}
-                        <button
-                          onClick={() => handleDeleteCourse(course._id)}
-                          className="absolute top-4 right-4 text-red-500 hover:text-red-700"
-                          aria-label="Delete course"
-                        >
-                          <FaTrash size={20} />
-                        </button>
-                        <button
-                          onClick={() => handleEditCourse(course)}
-                          className="absolute top-4 right-12 text-blue-500 hover:text-blue-700"
-                          aria-label="Edit course"
-                        >
-                          <FaEdit size={20} />
-                        </button>
-                      </div>
-                    )}
-                    <h2 className="text-lg font-semibold mb-2">
-                      {course.title}
-                    </h2>
-                    <p className="mb-2">{course.description}</p>
-                    <p className="mb-2">
-                      <strong>Duration:</strong> {course.duration} Week
-                    </p>
-                    <p className="mb-2">
-                      <strong>Level:</strong> {course.levels}
-                    </p>
-                    <p className="mb-2">
-                    <strong> Objectives </strong>
-                      {course.objectives.map((item, index) => (
+                    <h2 className="text-lg font-semibold">{course.title}</h2>
+                    <p className="text-gray-700">{course.description}</p>
+                    <p className="text-sm text-gray-600">Duration: {course.duration} weeks</p>
+                    <p className="text-sm text-gray-600">Levels: {course.levels}</p>
+                    <p className="text-sm text-gray-600">Price: ${course.price}</p>
+                    <div className="flex justify-between mt-4">
+                      {role === "Admin" && (
                         <>
-                          <span
-                            key={index}
-                            href={course.objectives}
-                            className="text-blue-500 font-bold"
+                          <button
+                            onClick={() => handleEditCourse(course)}
+                            className="flex items-center text-blue-500 hover:underline"
                           >
-                            {item}
-                          </span>
-                          <br />
-                        </>
-                      ))}
-                    </p>
-                    <p className="mb-2">
-                    <strong> Materials </strong>
-                      {course.material.map((item, index) => (
-                        <>
-                          <a
-                            key={index}
-                            href={course.material}
-                            target="_blank"
-                            className="text-blue-500 underline font-bold"
+                            <FaEdit className="mr-1" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCourse(course._id)}
+                            className="flex items-center text-red-500 hover:underline"
                           >
-                            {item}
-                          </a>
-                          <br />
+                            <FaTrash className="mr-1" />
+                          </button>
                         </>
-                      ))}
-                    </p>
-                    <p className="mb-2">
-                      <strong>Price:</strong> ${course.price}
-                    </p>
-                    <button
-                      onClick={() => handleEnroll(course._id)}
-                      className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
-                    >
-                      Enroll
-                    </button>
+                      )}
+                      <button
+                        onClick={() => handleEnroll(course._id)}
+                        className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
+                      >
+                        <FaBookOpen className="inline mr-2" />
+                        Enroll
+                      </button>
+                    </div>
                   </div>
                 ))
               ) : (
                 <p>No courses available.</p>
               )}
             </div>
-            <ToastContainer />
-            {error && (
-              <div className="mt-4 text-red-500">
-                <p>{error}</p>
-              </div>
-            )}
           </main>
         </div>
       </div>
+      <ToastContainer />
     </>
   );
 };

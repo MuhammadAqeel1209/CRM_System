@@ -80,7 +80,7 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 flex justify-center items-center">
+    <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 flex justify-center items-center px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl transform transition duration-500 hover:scale-105">
         <div className="p-8">
           <h2 className="text-4xl font-bold text-center text-gray-900 mb-8">

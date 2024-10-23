@@ -11,6 +11,7 @@ const Page = () => {
   const [userId, setUserId] = useState(null);
   const [users, setUsers] = useState([]);
   const [progress, setProgress] = useState({});
+  const [visibleMaterials, setVisibleMaterials] = useState({}); // State for material visibility
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
@@ -70,17 +71,15 @@ const Page = () => {
 
     return {
       courseTitle: courseDetails ? courseDetails.title : "N/A",
-      courseMaterail: courseDetails ? courseDetails.material : "N/A",
+      courseMaterial: courseDetails ? courseDetails.material : [],
     };
   };
 
-  // New function to handle reading progress
   const startReading = async (linkId) => {
     const readTime = 10; // Total read time in minutes
     const userProgress = progress[linkId] || 0;
 
     if (userProgress < readTime) {
-      // Increment progress
       const updatedProgress = { ...progress, [linkId]: userProgress + 1 };
       setProgress(updatedProgress);
 
@@ -92,6 +91,13 @@ const Page = () => {
     }
   };
 
+  const toggleMaterialVisibility = (userId) => {
+    setVisibleMaterials((prevState) => ({
+      ...prevState,
+      [userId]: !prevState[userId],
+    }));
+  };
+
   return (
     <div className="flex h-screen bg-gray-100">
       <Sidebar />
@@ -99,115 +105,83 @@ const Page = () => {
       <div className="flex-1 flex flex-col">
         <main className="flex-grow p-6 bg-gray-100">
           <div className="flex items-center justify-between w-full md:w-auto mb-4 md:mb-0">
-            <h1 className="text-2xl font-semibold">User Courses </h1>
+            <h1 className="text-2xl font-semibold">User Courses</h1>
             <Button />
           </div>
 
-          <div className="overflow-x-auto mt-4">
-            <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
-              <thead className="bg-gray-200">
-                <tr>
-                  {[
-                    "First Name",
-                    "Last Name",
-                    "Phone Number",
-                    "Email",
-                    "Course Title",
-                    "Course Materials",
-                    "Progress",
-                    "Action",
-                  ].map((heading) => (
-                    <th
-                      key={heading}
-                      className="py-3 px-4 border-b text-left text-gray-600"
-                    >
-                      {heading}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {users.length > 0 ? (
-                  users
-                    .filter((user) => {
-                      const isUserEnrolled = enrolledCourses.some(
-                        (course) => course.userId === user._id
-                      );
-                      return isUserEnrolled; // Show only enrolled users
-                    })
-                    .map((user) => {
-                      const { courseTitle, courseMaterail } =
-                        getUserCourseDetails(user);
-                      const enrolledCourse = enrolledCourses.find(
-                        (course) => course.userId === user._id
-                      );
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {users.length > 0 ? (
+              users
+                .filter((user) => {
+                  const isUserEnrolled = enrolledCourses.some(
+                    (course) => course.userId === user._id
+                  );
+                  return isUserEnrolled; // Show only enrolled users
+                })
+                .map((user) => {
+                  const { courseTitle, courseMaterial } =
+                    getUserCourseDetails(user);
+                  const enrolledCourse = enrolledCourses.find(
+                    (course) => course.userId === user._id
+                  );
 
-                      // Conditional rendering based on user role
-                      const isAuthorizedUser =
-                        userRole === "Admin" || user._id === userId;
+                  const isAuthorizedUser =
+                    userRole === "Admin" || user._id === userId;
 
-                      return (
-                        isAuthorizedUser && (
-                          <tr
-                            key={user._id}
-                            className="hover:bg-gray-50 transition duration-200"
-                          >
-                            <td className="py-2 px-4 border-b text-center">
-                              {user.firstName}
-                            </td>
-                            <td className="py-2 px-4 border-b text-center">
-                              {user.lastName}
-                            </td>
-                            <td className="py-2 px-4 border-b text-center">
-                              {user.phoneNumber}
-                            </td>
-                            <td className="py-2 px-4 border-b text-center">
-                              {user.email}
-                            </td>
-                            <td className="py-2 px-4 border-b text-center">
-                              {courseTitle}
-                            </td>
-                            <td className="py-2 px-4 border-b text-center">
-                              {courseMaterail.map((item, index) => (
-                                <>
-                                  <a
-                                    key={index}
-                                    href={item}
-                                    target="_blank"
-                                    className="text-blue-500 underline font-bold"
-                                  >
-                                    {item}
-                                  </a>
-                                  <br />
-                                </>
-                              ))}
-                            </td>
-                            <td className="py-2 px-4 border-b text-center">
-                              {progress[enrolledCourse.courseId] || 0} / 10
-                            </td>
-                            <td className="py-2 px-4 border-b text-center">
-                              <button
-                                onClick={() =>
-                                  startReading(enrolledCourse.courseId)
-                                }
-                                className="bg-blue-500 text-white px-2 py-1 rounded"
-                              >
-                                Start Reading
-                              </button>
-                            </td>
-                          </tr>
-                        )
-                      );
-                    })
-                ) : (
-                  <tr>
-                    <td colSpan="8" className="py-4 text-center text-gray-500">
-                      No users found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  return (
+                    isAuthorizedUser && (
+                      <div
+                        key={user._id}
+                        className="bg-white p-4 border rounded-lg shadow-md transition-transform transform hover:scale-105"
+                      >
+                        <h3 className="font-semibold text-lg">
+                          {user.firstName} {user.lastName}
+                        </h3>
+                        <p>Phone: {user.phoneNumber}</p>
+                        <p>Email: {user.email}</p>
+                        <p>Course Title: {courseTitle}</p>
+
+                        <button
+                          onClick={() => toggleMaterialVisibility(user._id)}
+                          className="bg-blue-500 text-white px-2 py-1 rounded mt-2"
+                        >
+                          {visibleMaterials[user._id] ? "Hide Materials" : "Show Materials"}
+                        </button>
+
+                        {visibleMaterials[user._id] && (
+                          <div className="mt-2">
+                            <p>Course Materials:</p>
+                            {courseMaterial.map((item, index) => (
+                              <div key={index}>
+                                <a
+                                  href={item}
+                                  target="_blank"
+                                  className="text-blue-500 underline font-bold block max-w-full break-words"
+                                  rel="noopener noreferrer"
+                                >
+                                  {item}
+                                </a>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <p>
+                          Progress: {progress[enrolledCourse.courseId] || 0} / 10
+                        </p>
+                        <button
+                          onClick={() => startReading(enrolledCourse.courseId)}
+                          className="bg-blue-500 text-white px-2 py-1 rounded mt-2"
+                        >
+                          Start Reading
+                        </button>
+                      </div>
+                    )
+                  );
+                })
+            ) : (
+              <p className="text-gray-500 col-span-3">No users found.</p>
+            )}
           </div>
         </main>
       </div>

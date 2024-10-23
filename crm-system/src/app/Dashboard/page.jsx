@@ -17,16 +17,14 @@ import {
   FaClipboardList,
   FaBriefcase,
   FaBookOpen,
-
 } from "react-icons/fa";
 
-const Dashborad = () => {
+const Dashboard = () => {
   const [stats, setStats] = useState({});
   const [error, setError] = useState("");
   const [partners, setPartners] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [courses, setCourses] = useState([]);
-  const [data, setData] = useState([]);
   const [userRole, setUserRole] = useState();
   const [monthlyClosures, setMonthlyClosures] = useState(0);
   const [openLeads, setOpenLeads] = useState(0);
@@ -98,9 +96,9 @@ const Dashborad = () => {
     };
 
     const fetchKPIData = async () => {
-      const collectionName = "contracts"; // The name of the collection
-      const fieldName = "applicationStatus"; // The field you want to filter by
-      const values = ["New", "In Review", "Approved"]; // Array of values to filter the documents
+      const collectionName = "contracts"; 
+      const fieldName = "applicationStatus"; 
+      const values = ["New", "In Review", "Approved"]; 
 
       axios
         .post(`/api/kpiClourse`, {
@@ -117,6 +115,7 @@ const Dashborad = () => {
           setError("Failed to fetch KPI data. Please try again later.");
         });
     };
+
     const fetchKPILead = async () => {
       const collectionName = "contracts";
       const fieldName = "status";
@@ -128,12 +127,12 @@ const Dashborad = () => {
 
       axios
         .post(`/api/kpiLeads`, {
-            collection: collectionName,
-            field: fieldName,
-            values,
-            startDate,
-            endDate,
-          },)
+          collection: collectionName,
+          field: fieldName,
+          values,
+          startDate,
+          endDate,
+        })
         .then((res) => {
           setOpenLeads(res.data.count);
         })
@@ -150,16 +149,21 @@ const Dashborad = () => {
   }, []);
 
   const calculateKPIPercentage = (monthlyClosures, totalLeads) => {
-    if (totalLeads === 0) return 0; // To avoid division by zero
+    if (totalLeads === 0) return 0; 
     return (monthlyClosures / totalLeads) * 100;
   };
 
   const kpiPercentage = calculateKPIPercentage(monthlyClosures, openLeads);
 
   return (
-    <div className="flex bg-gray-100">
-      <Sidebar />
-      <div className="flex-1 flex flex-col">
+    <div className="flex min-h-screen">
+      {/* Sidebar */}
+      <div className="w-64 h-screen bg-gray-800 fixed">
+        <Sidebar />
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 ml-64 overflow-y-auto">
         <main className="p-4">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-semibold">Dashboard Overview</h1>
@@ -198,7 +202,6 @@ const Dashborad = () => {
               value={`${kpiPercentage} %`}
               icon={<FaChartLine size={30} className="text-red-500" />}
             />
-            {/* New Dashboard Cards for Leads and Monthly Closures */}
             <DashboardCard
               title="Open Leads"
               value={openLeads}
@@ -226,9 +229,7 @@ const Dashborad = () => {
                 ))}
               </div>
               <p className="mt-2 text-sm text-gray-500">
-                <Link href={"/Partner"}>
-                  Click on a partner for more details.
-                </Link>
+                <Link href={"/Partner"}>Click on a partner for more details.</Link>
               </p>
             </div>
           )}
@@ -241,7 +242,7 @@ const Dashborad = () => {
                 <Link href="/Calendar">
                   <DashboardCard
                     title="Meetings Scheduled"
-                    value="" // You can replace this with actual data if available
+                    value="" 
                     icon={<FaCalendar size={30} className="text-green-500" />}
                   />
                 </Link>
@@ -257,22 +258,19 @@ const Dashborad = () => {
                 {tasks.map((task) => (
                   <DashboardCard
                     key={task._id}
-                    title={`Title: ${task.title}`}
-                    value={`Status: ${task.status}`}
+                    title={task.title}
+                    value={task.status}
                     icon={<FaTasks size={30} className="text-blue-500" />}
                   />
                 ))}
               </div>
-              <p className="mt-2 text-sm text-gray-500">
-                <Link href={"/Task"}>Click on a task for more details.</Link>
-              </p>
             </div>
           )}
 
-          {/* E-Learning Section */}
+          {/* Courses Overview Section */}
           {userRole === "Admin" && (
             <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-2">E-Learning Section</h2>
+              <h2 className="text-xl font-semibold mb-2">Courses Overview</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {courses.map((course) => (
                   <DashboardCard
@@ -280,16 +278,10 @@ const Dashborad = () => {
                     title={
                       <span className="font-bold">Title: {course.title}</span>
                     }
-                    value={`Description: ${course.description}`}
-                    icon={<FaBookOpen size={30} className="text-yellow-500" />}
+                    icon={<FaBookOpen size={30} className="text-blue-500" />}
                   />
                 ))}
               </div>
-              <p className="mt-2 text-sm text-gray-500">
-                <Link href={"/E-Learning"}>
-                  Click on a course for more details.
-                </Link>
-              </p>
             </div>
           )}
         </main>
@@ -298,4 +290,4 @@ const Dashborad = () => {
   );
 };
 
-export default Dashborad;
+export default Dashboard;

@@ -115,9 +115,12 @@ const Users = () => {
   
       // Assuming the API responds with the image URL in response.data
       const imageUrl = response.data.imageUrl; // Adjust based on your API response
+      console.log(imageUrl)
+    
   
       if (imageUrl) {
         setNewUser({ ...editUser, profileImage: imageUrl });
+        console.log(editUser)
       }
     } catch (error) {
       console.error("Error uploading image:", error);

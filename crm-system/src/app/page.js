@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
-import { useSignIn, useUser } from '@clerk/nextjs';
 
 // Helper functions for setting and getting items with expiration
 function setItemWithExpiry(key, value, expiryInMinutes) {
@@ -35,19 +34,13 @@ export default function Page() {
   const [error, setError] = useState(null);
   const router = useRouter();
   
-  // Clerk hooks
-  const { isLoaded, signIn } = useSignIn(); // Destructure isLoaded and signIn
-  const { user } = useUser();  // Use Clerk's user hook to get user data
-
   // Check if the user is already logged in
   useEffect(() => {
-    if (!isLoaded) return; // Wait for signIn to be fully loaded
-
     const userRole = getItemWithExpiry('userRole');
-    if (signIn?.isSignedIn && userRole) {
+    if (userRole) {
       router.push("/Dashboard");
     }
-  }, [signIn, router, isLoaded]);
+  }, []);
 
   // Handle login action
   const handleLogin = async (e) => {
@@ -55,16 +48,25 @@ export default function Page() {
     setError(null);
 
     try {
-      // Sign in the user
-      const signInAttempt = await signIn.create({
-        identifier: email,
-        password,
+      // Replace this with your actual authentication logic
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (signInAttempt.status === "complete") {
-        const userRole = user?.role
+      const result = await response.json();
+      console.log(result)
+      if (response.ok) {
+        const userRole = result.data.role; // Assuming the role comes from the API response
+        const userId = result.data._id; // Assuming the role comes from the API response
         setItemWithExpiry('userRole', userRole, 60); // Expire in 60 minutes
+        setItemWithExpiry('userId', userId, 60); // Expire in 60 minutes
         router.push("/Dashboard");
+      } else {
+        setError(result.message || "Invalid login credentials.");
       }
     } catch (error) {
       setError(error.message || "An error occurred while logging in. Please try again.");

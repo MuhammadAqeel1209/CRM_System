@@ -62,8 +62,9 @@ export const POST = async (request) => {
       );
     }
 
-    // Hash the password before saving to the database
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
 
     // Create a new user
     const newUser = await Users.create({

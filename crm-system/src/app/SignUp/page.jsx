@@ -31,15 +31,9 @@ const SignUp = () => {
     setError(null);
 
     try {
-      const saltRounds = 10;
-      console.log(newUser.password)
-      newUser.password = await bcrypt.hash(newUser.password, saltRounds);
-      console.log(newUser.password)
-      const userWithHashedPassword = {
-        ...newUser
-      };
+  
 
-      const response = await axios.post("/api/users", userWithHashedPassword);
+      const response = await axios.post("/api/users", newUser);
       if (response.data.success && response.data.data) {
         userRegisterSuccessfully()
       } else {

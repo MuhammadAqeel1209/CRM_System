@@ -1,28 +1,29 @@
-import { Clerk } from "@clerk/clerk-sdk-node";
+import bcrypt from "bcryptjs";
 import db from "@/app/libs/mongodb";
 import Users from "@/app/Model/User";
 
-const clerk = new Clerk({ apiKey: process.env.CLERK_API_KEY }); // Set your Clerk API key
 
 export async function POST(req) {
   const { email, password } = await req.json();
-  console.log(email, password);
+  console.log(email,password)
 
   try {
     await db();
 
-    // Authenticate the user with Clerk
-    const session = await clerk.authenticate({
-      identifier: email,
-      password,
-    });
-
-    // If authentication succeeds, find the user in your database
-    const user = await Users.findOne({ clerkUserId: session.userId }); // Assuming you store Clerk user IDs
+    const user = await Users.findOne({ email });
     if (!user) {
       return new Response(
         JSON.stringify({ success: false, message: "User does not exist." }),
         { status: 404 }
+      );
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return new Response(
+        JSON.stringify({ success: false, message: "Invalid password." }),
+        { status: 401 }
       );
     }
 
@@ -35,9 +36,9 @@ export async function POST(req) {
     return new Response(
       JSON.stringify({
         success: false,
-        message: "Invalid email or password.",
+        message: "An error occurred while logging in. Please try again later.",
       }),
-      { status: 401 }
+      { status: 500 }
     );
   }
 }

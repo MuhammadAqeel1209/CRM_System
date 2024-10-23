@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import Button from "../Components/Button";
 import Sidebar from "../Components/Sidebar";
 import axios from "axios";
-import bcrypt from "bcryptjs";
 import { FaPlus, FaTimes, FaEdit, FaTrash } from "react-icons/fa";
 
 const Users = () => {
@@ -88,18 +87,13 @@ const Users = () => {
     setError(null); // Reset error state
 
     try {
-      // Hash the password before sending it to the server
-      const saltRounds = 10; // Salt rounds for hashing, usually between 10-12 is good
-      const hashedPassword = await bcrypt.hash(newUser.password, saltRounds);
 
-      // Update newUser object with the hashed password
-      const userWithHashedPassword = {
+      const user = {
         ...newUser,
-        password: hashedPassword,
       };
 
       // Send the user data to the server via POST request
-      const response = await axios.post("/api/users", userWithHashedPassword);
+      const response = await axios.post("/api/users", user);
 
       if (response.data.success && response.data.data) {
         // Successfully added user, update the state

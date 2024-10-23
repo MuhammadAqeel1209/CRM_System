@@ -1,5 +1,6 @@
 import connectDatabase from "@/app/libs/mongodb";
 import ContactDetail from "@/app/Model/DataCollection";
+
 export const POST = async (request) => {
   try {
     await connectDatabase(); // Connect to the database
@@ -11,18 +12,15 @@ export const POST = async (request) => {
       contactPhase,
       assignedToUserId,
     } = await request.json();
-    console.log(title,
-      linkedToContactId,
-      linkedToContractId,
-      contactPhase,
-      assignedToUserId,);
 
     // Validate required fields
-    if ( ! title ||
-      ! linkedToContactId ||
-      ! linkedToContractId ||
-      ! contactPhase ||
-      ! assignedToUserId) {
+    if (
+      !title ||
+      !linkedToContactId ||
+      !linkedToContractId ||
+      !contactPhase ||
+      !assignedToUserId
+    ) {
       return new Response(
         JSON.stringify({
           success: false,
@@ -47,7 +45,7 @@ export const POST = async (request) => {
     return new Response(
       JSON.stringify({
         success: true,
-        status: 200, 
+        status: 200,
         message: "ContactDetail registered successfully",
         data: newContactDetail,
       }),
@@ -57,7 +55,7 @@ export const POST = async (request) => {
       }
     );
   } catch (error) {
-    console.error("Error in POST /api/ContactDetails:", error);
+    console.error("Error in POST /api/collections:", error);
     return new Response(
       JSON.stringify({
         success: false,
@@ -76,7 +74,6 @@ export const GET = async (request) => {
   try {
     await connectDatabase();
     const data = await ContactDetail.find();
-    console.log
     return new Response(
       JSON.stringify({
         success: true,

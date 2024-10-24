@@ -65,69 +65,69 @@ const Users = () => {
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
   
-    // if (!file) {
-    //   // Handle the case where no file was selected
-    //   connsole.error("No file selected");
-    //   return;
-    // }
+    if (!file) {
+      // Handle the case where no file was selected
+      connsole.error("No file selected");
+      return;
+    }
   
-    // const formData = new FormData();
-    // formData.append("image", file); 
-    // formData.append("userId",newUser._id)
-    // try {
-    //   const response = await axios.post("/api/uploadImage", formData, {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data", // Important for file uploads
-    //     },
-    //   });
+    const formData = new FormData();
+    formData.append("image", file); 
+    formData.append("userId",newUser._id)
+    try {
+      const response = await axios.post("/api/uploadImage", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Important for file uploads
+        },
+      });
   
-    //   // Assuming the API responds with the image URL in response.data
-    //   const imageUrl = response.data.imageUrl; // Adjust based on your API response
+      // Assuming the API responds with the image URL in response.data
+      const imageUrl = response.data.imageUrl; // Adjust based on your API response
   
-    //   if (imageUrl) {
-    //     setNewUser({ ...newUser, profileImage: imageUrl });
-    //   }
-    // } catch (error) {
-    //   console.error("Error uploading image:", error);
-    //   // Optionally, handle the error (e.g., show a message to the user)
-    // }
+      if (imageUrl) {
+        setNewUser({ ...newUser, profileImage: imageUrl });
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      // Optionally, handle the error (e.g., show a message to the user)
+    }
   };
   
 
   const handleEditImageChange = async (e) => {
     const file = e.target.files[0];
   
-    // if (!file) {
-    //   // Handle the case where no file was selected
-    //   console.error("No file selected");
-    //   return;
-    // }
+    if (!file) {
+      // Handle the case where no file was selected
+      console.error("No file selected");
+      return;
+    }
   
-    // const formData = new FormData();
-    // formData.append("image", file);
-    // formData.append("userId",editUser._id)
-    //  // 'image' is the key used to upload
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("userId",editUser._id)
+     // 'image' is the key used to upload
   
-    // try {
-    //   const response = await axios.post("/api/uploadImage", formData, {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data", // Important for file uploads
-    //     },
-    //   });
+    try {
+      const response = await axios.post("/api/uploadImage", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Important for file uploads
+        },
+      });
   
-    //   // Assuming the API responds with the image URL in response.data
-    //   const imageUrl = response.data.imageUrl; // Adjust based on your API response
-    //   console.log(imageUrl)
+      // Assuming the API responds with the image URL in response.data
+      const imageUrl = response.data.imageUrl; // Adjust based on your API response
+      console.log(imageUrl)
     
   
-    //   if (imageUrl) {
-    //     setNewUser({ ...editUser, profileImage: imageUrl });
-    //     console.log(editUser)
-    //   }
-    // } catch (error) {
-    //   console.error("Error uploading image:", error);
-    //   // Optionally, handle the error (e.g., show a message to the user)
-    // }
+      if (imageUrl) {
+        setNewUser({ ...editUser, profileImage: imageUrl });
+        console.log(editUser)
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      // Optionally, handle the error (e.g., show a message to the user)
+    }
   };
     
 

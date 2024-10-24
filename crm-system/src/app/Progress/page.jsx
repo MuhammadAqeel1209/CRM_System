@@ -1,5 +1,5 @@
-"use client";
-import React, { useState, useEffect } from "react";
+'use client';
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Button from "../Components/Button";
 import Sidebar from "../Components/Sidebar";
@@ -10,7 +10,9 @@ const Page = () => {
   const [userRole, setUserRole] = useState("");
   const [userId, setUserId] = useState(null);
   const [users, setUsers] = useState([]);
-  const [visibleMaterials, setVisibleMaterials] = useState({}); // State for material visibility
+  const [visibleMaterials, setVisibleMaterials] = useState({});
+  const [visitedLinks, setVisitedLinks] = useState({}); // Track visited links
+  const timerRef = useRef(null); // Reference for the timer
 
   useEffect(() => {
     const role = localStorage.getItem("userRole");
@@ -60,25 +62,53 @@ const Page = () => {
     fetchUser();
   }, []);
 
-  const getUserCourseDetails = (user) => {
-    const enrolledCourse = enrolledCourses.find(
-      (course) => course.userId === user._id
-    );
-    const courseDetails = enrolledCourse
-      ? courses.find((course) => course._id === enrolledCourse.courseId)
-      : null;
+  const getUserCourses = (user) => {
+    const userCourses = enrolledCourses
+      .filter((course) => course.userId === user._id)
+      .map((enrolledCourse) =>
+        courses.find((course) => course._id === enrolledCourse.courseId)
+      )
+      .filter(Boolean);
 
-    return {
-      courseTitle: courseDetails ? courseDetails.title : "N/A",
-      courseMaterial: courseDetails ? courseDetails.material : [],
-    };
+    return userCourses.length > 0 ? userCourses : [{ title: "N/A", material: [] }];
   };
 
-  const toggleMaterialVisibility = (userId) => {
+  const toggleMaterialVisibility = (userId, courseIndex) => {
     setVisibleMaterials((prevState) => ({
       ...prevState,
-      [userId]: !prevState[userId],
+      [userId]: {
+        ...prevState[userId],
+        [courseIndex]: !prevState[userId]?.[courseIndex],
+      },
     }));
+  };
+
+  const handleLinkClick = (userId, courseIndex, materialIndex) => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
+    timerRef.current = setTimeout(() => {
+      setVisitedLinks((prevState) => ({
+        ...prevState,
+        [userId]: {
+          ...prevState[userId],
+          [courseIndex]: {
+            ...prevState[userId]?.[courseIndex],
+            [materialIndex]: true,
+          },
+        },
+      }));
+    }, 600000); // 10 minutes in milliseconds
+  };
+
+  const getVisitedPercentage = (userId, courseIndex, totalMaterials) => {
+    const visitedLinksForUser = visitedLinks[userId]?.[courseIndex] || {};
+    const visitedCount = Object.values(visitedLinksForUser).filter(Boolean)
+      .length;
+    return totalMaterials > 0
+      ? ((visitedCount / totalMaterials) * 100).toFixed(2)
+      : 0;
   };
 
   return (
@@ -96,18 +126,12 @@ const Page = () => {
             {users.length > 0 ? (
               users
                 .filter((user) => {
-                  const isUserEnrolled = enrolledCourses.some(
+                  return enrolledCourses.some(
                     (course) => course.userId === user._id
                   );
-                  return isUserEnrolled; // Show only enrolled users
                 })
                 .map((user) => {
-                  const { courseTitle, courseMaterial } =
-                    getUserCourseDetails(user);
-                  const enrolledCourse = enrolledCourses.find(
-                    (course) => course.userId === user._id
-                  );
-
+                  const userCourses = getUserCourses(user);
                   const isAuthorizedUser =
                     userRole === "Admin" || user._id === userId;
 
@@ -122,34 +146,62 @@ const Page = () => {
                         </h3>
                         <p>Phone: {user.phoneNumber}</p>
                         <p>Email: {user.email}</p>
-                        <p>Course Title: {courseTitle}</p>
 
-                        <button
-                          onClick={() => toggleMaterialVisibility(user._id)}
-                          className="bg-blue-500 text-white px-2 py-1 rounded mt-2"
-                        >
-                          {visibleMaterials[user._id]
-                            ? "Hide Materials"
-                            : "Show Materials"}
-                        </button>
+                        {userCourses.map((course, courseIndex) => (
+                          <div key={courseIndex} className="mt-4">
+                            {course.material.length > 0 && ( // Only show material if it exists
+                              <>
+                                <p>Course Title: {course.title}</p>
 
-                        {visibleMaterials[user._id] && (
-                          <div className="mt-2">
-                            <p>Course Materials:</p>
-                            {courseMaterial.map((item, index) => (
-                              <div key={index}>
-                                <a
-                                  href={item}
-                                  target="_blank"
-                                  className="text-blue-500 underline font-bold block max-w-full break-words"
-                                  rel="noopener noreferrer"
-                                >
-                                  {item}
-                                </a>
-                              </div>
-                            ))}
+                                {/* Render Show/Hide Materials button only if the logged-in user is the enrolled user */}
+                                {enrolledCourses.some(
+                                  (enrolledCourse) =>
+                                    enrolledCourse.userId === userId &&
+                                    enrolledCourse.courseId === course._id
+                                ) && (
+                                  <button
+                                    onClick={() =>
+                                      toggleMaterialVisibility(user._id, courseIndex)
+                                    }
+                                    className="bg-blue-500 text-white px-2 py-1 rounded mt-2"
+                                  >
+                                    {visibleMaterials[user._id]?.[courseIndex]
+                                      ? "Hide Materials"
+                                      : "Show Materials"}
+                                  </button>
+                                )}
+
+                                {/* Conditionally render the course materials */}
+                                {visibleMaterials[user._id]?.[courseIndex] && (
+                                  <div className="mt-2">
+                                    <p>Course Materials:</p>
+                                    {course.material.map((item, materialIndex) => (
+                                      <div key={materialIndex}>
+                                        <a
+                                          href={item}
+                                          target="_blank"
+                                          className="text-blue-500 underline font-bold block max-w-full break-words"
+                                          rel="noopener noreferrer"
+                                          onClick={() =>
+                                            handleLinkClick(user._id, courseIndex, materialIndex)
+                                          }
+                                        >
+                                          {item}
+                                        </a>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {/* Always show the progress percentage */}
+                                <p className="mt-2">
+                                  Progress Percentage:{" "}
+                                  {getVisitedPercentage(user._id, courseIndex, course.material.length)}%
+                                </p>
+                              </>
+                            )}
                           </div>
-                        )}
+                        ))}
                       </div>
                     )
                   );

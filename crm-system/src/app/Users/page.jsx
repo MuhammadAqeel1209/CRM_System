@@ -24,7 +24,7 @@ const Users = () => {
     dateOfBirth: "",
     position: "",
     location: "",
-    profileImage: null, // Store the image file here
+    profileImage: "", // Store the image file here
   });
 
   useEffect(() => {
@@ -189,7 +189,6 @@ console.log(newUser)
       dateOfBirth: "",
       position: "",
       location: "",
-      teamId: "",
     });
     setError(null); // Reset error state
   };

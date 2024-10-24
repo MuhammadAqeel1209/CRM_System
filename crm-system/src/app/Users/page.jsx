@@ -67,13 +67,13 @@ const Users = () => {
   
     if (!file) {
       // Handle the case where no file was selected
-      console.error("No file selected");
+      connsole.error("No file selected");
       return;
     }
   
     const formData = new FormData();
-    formData.append("image", file); // 'image' is the key used to upload
-  
+    formData.append("image", file); 
+    formData.append("userId",newUser._id)
     try {
       const response = await axios.post("/api/uploadImage", formData, {
         headers: {
@@ -104,7 +104,9 @@ const Users = () => {
     }
   
     const formData = new FormData();
-    formData.append("image", file); // 'image' is the key used to upload
+    formData.append("image", file);
+    formData.append("userId",editUser._id)
+     // 'image' is the key used to upload
   
     try {
       const response = await axios.post("/api/uploadImage", formData, {

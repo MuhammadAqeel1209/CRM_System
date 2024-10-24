@@ -10,7 +10,6 @@ const Page = () => {
   const [userRole, setUserRole] = useState("");
   const [userId, setUserId] = useState(null);
   const [users, setUsers] = useState([]);
-  const [progress, setProgress] = useState({});
   const [visibleMaterials, setVisibleMaterials] = useState({}); // State for material visibility
 
   useEffect(() => {
@@ -75,22 +74,6 @@ const Page = () => {
     };
   };
 
-  const startReading = async (linkId) => {
-    const readTime = 10; // Total read time in minutes
-    const userProgress = progress[linkId] || 0;
-
-    if (userProgress < readTime) {
-      const updatedProgress = { ...progress, [linkId]: userProgress + 1 };
-      setProgress(updatedProgress);
-
-      try {
-        await axios.post("/api/progessReport", { userId, linkId, time: 1 });
-      } catch (error) {
-        console.error("Error updating progress:", error);
-      }
-    }
-  };
-
   const toggleMaterialVisibility = (userId) => {
     setVisibleMaterials((prevState) => ({
       ...prevState,
@@ -145,7 +128,9 @@ const Page = () => {
                           onClick={() => toggleMaterialVisibility(user._id)}
                           className="bg-blue-500 text-white px-2 py-1 rounded mt-2"
                         >
-                          {visibleMaterials[user._id] ? "Hide Materials" : "Show Materials"}
+                          {visibleMaterials[user._id]
+                            ? "Hide Materials"
+                            : "Show Materials"}
                         </button>
 
                         {visibleMaterials[user._id] && (
@@ -165,16 +150,6 @@ const Page = () => {
                             ))}
                           </div>
                         )}
-
-                        <p>
-                          Progress: {progress[enrolledCourse.courseId] || 0} / 10
-                        </p>
-                        <button
-                          onClick={() => startReading(enrolledCourse.courseId)}
-                          className="bg-blue-500 text-white px-2 py-1 rounded mt-2"
-                        >
-                          Start Reading
-                        </button>
                       </div>
                     )
                   );

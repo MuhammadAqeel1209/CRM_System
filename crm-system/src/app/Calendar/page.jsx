@@ -14,7 +14,7 @@ const Page = () => {
               <h1 className="text-3xl font-bold">Calendar Overview</h1>
             </div>
             <div className="calendar-widget">
-              <InlineWidget url="https://calendly.com/muhammadaqeelshakeel1209/30min" />
+              <InlineWidget url="https://calendly.com/fedeli4962@jameagle.com/30min" />
             </div>
           </div>
         </main>

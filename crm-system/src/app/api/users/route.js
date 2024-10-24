@@ -30,8 +30,7 @@ export const POST = async (request) => {
       !email ||
       !dateOfBirth ||
       !position ||
-      !location ||
-      !profileImage
+      !location 
     ) {
       return new Response(
         JSON.stringify({
